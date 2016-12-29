@@ -6,85 +6,67 @@
 #    By: mbarbari <mbarbari@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/04/07 16:55:33 by mbarbari          #+#    #+#              #
-#    Updated: 2016/04/07 17:21:38 by mbarbari         ###   ########.fr        #
+#    Updated: 2016/12/28 10:28:51 by barbare          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = FT_P
-CC=clang
+CC ?= gcc
+CX ?= clang++
+CFLAGS += -g -Wall -Wextra -Werror -Ilibs/libft/Include/ -Iserver/include -lcrypt
 
-LIB_PATH ?= libs/
+SRV_SRCS =  server/src/handle_cmd.c \
+      		server/src/handle_system.c \
+      		server/src/handle_ls.c \
+      		server/src/handle_cd.c \
+      		server/src/handle_get.c \
+      		server/src/handle_user_password.c \
+      		server/src/main.c \
+      		server/src/options_com.c \
+			server/src/configure_server.c \
+			server/src/tool.c \
+      		server/src/server.c
 
-MLX_PROJECT ?= no
+SRV_OBJS = $(patsubst server/src/%.c,server/obj/%.o,$(SRV_SRCS))
 
-CFLAGS += -Wall -Wextra -Werror
+SRC_INCLUDE = server/include/options.h
 
+CLI_SRCS = client/client.c
 
-# ##############################################################################
-# File C
+CLI_OBJS = $(patsubst client/src/%.c,client/obj/%.o,$(CLI_SRCS))
 
-SRCS =	src/main.c 												\
-		src/ft_env.c
+RM ?= rm -f
+MKDIR ?= mkdir
 
-# ##############################################################################
-# File H
+all: srv cli
 
-INC_FILES = include/ft_env.h
+libs/libft/libft.a:
+	$(MAKE) -C libs/libft/
 
-# ##############################################################################
-# ##############################################################################
+libs/libft/libftstream.a:
+	$(MAKE) -C libs/libftstream
 
-LIB_PATH = ./Libs/
+srv: libs/libft/libft.a $(SRV_OBJS)
+	$(CC) $(CFLAGS) -o $@ $^ -Llibs/libft/ -lft
 
-STREAM_PATH = $(LIB_PATH)/libftstream/
-PRINTF_PATH = $(LIB_PATH)/libftprintf/
-LIBFT_PATH = $(LIB_PATH)/libft/
+cli: libs/libft/libft.a libs/libft/libftstream.a $(CLI_OBJS) $(COM_OBJS)
+	$(CC) $(CFLAGS) -o $@ $^ -Llibs/libft/ -lft
 
-C_INCLUDE_PATH += $(STREAM_PATH)/include $(LIBFT_PATH)/include $(PRINTF_PATH)/include/ include/ 
-
-CFLAGS += $(foreach d, $(C_INCLUDE_PATH), -I$d)
-
-OBJS = $(patsubst src/%.c,obj/%.o,$(SRCS))
-
-CP = cp
-
-RM = rm -f
-
-LDFLAGS += -L$(STREAM_PATH) -lftstream -L$(PRINTF_PATH) -lftprintf -L$(LIBFT_PATH) -lft
-
-all: $(NAME)
-
-MKDIR ?= mkdir -p
-
-obj/%.o: src/%.c $(INC_FILES)
+server/obj/%.o: server/src/%.c $(SRC_INCLUDE)
 	$(MKDIR) -p $(dir $@)
 	$(CC) -c $(CFLAGS) $< -o $@
 
-$(LIBFT_PATH)/libftstream.a:
-	$(MAKE) -C $(STREAM_PATH)
-
-$(LIBFT_PATH)/libftprintf.a:
-	$(MAKE) -C $(PRINTF_PATH)
-
-$(LIBFT_PATH)/libft.a:
-	$(MAKE) -C $(LIBFT_PATH)
-
-$(NAME): $(DIR_LIB)/libftprintf/libftprintf.a $(DIR_LIB)/libftstream/libftstream.a $(LIBFT_PATH)/libft.a $(OBJS)
-	$(CC) -O3 -o $@ $(OBJS) $(LDFLAGS)
-
-
 clean:
-	$(RM) $(OBJS)
-	$(MAKE) -C $(STREAM_PATH) clean
-	$(MAKE) -C $(LIBFT_PATH) clean
-	$(MAKE) -C $(PRINTF_PATH) clean
+	$(MAKE) -C libs/libft/ clean
+	$(MAKE) -C libs/libftstream/ clean
+	$(RM) $(SRV_OBJS)
+	$(RM) $(CLI_OBJS)
 
 fclean: clean
-	$(RM) $(NAME)
-	$(MAKE) -C $(STREAM_PATH) fclean
-	$(MAKE) -C $(LIBFT_PATH) fclean
-	$(MAKE) -C $(PRINTF_PATH) fclean
+	$(MAKE) -C libs/libft/ fclean
+	$(MAKE) -C libs/libftstream/ fclean
+	$(RM) $(SRV_OBJS)
+	$(RM) $(CLI_OBJS)
 
 re: fclean all
 
-.PHONY: all clean fclean re $(LIBFT_PATH)/libft.a $(PRINTF_PATH)/libftprintf.a $(MLX_PATH)/libmlx.a
+.PHONY: clean fclean re all libft/libft.a libft/libftstream.a
