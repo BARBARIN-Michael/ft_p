@@ -6,7 +6,7 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/28 15:50:33 by barbare           #+#    #+#             */
-/*   Updated: 2017/01/23 15:15:17 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/23 20:27:48 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ struct                  s_env
     int                 cli_fd;
     int                 srv_fd;
     unsigned int        isrun;
-    struct sockaddr_in  cli_addr;
+    struct sockaddr_in6  cli_addr;
     struct hostent      *host;
     struct protoent     *proto;
 };

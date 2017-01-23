@@ -6,7 +6,7 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/20 13:48:12 by barbare           #+#    #+#             */
-/*   Updated: 2017/01/23 12:43:45 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/23 20:50:37 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,9 +51,37 @@ t_cli		handle_port(t_env UNUSED(env), t_cli cli, char *UNUSED(str))
 
 t_cli		handle_pasv(t_env UNUSED(env), t_cli cli, char *UNUSED(str))
 {
-	struct sockaddr_in	localAddr;
+	struct sockaddr_in6	sin;
 	socklen_t			addrLength;
-	char				**args;
+	unsigned short		port;
+	char				inet[12];
+
+	port = 0;
+	if (cli.istransferable)
+		close(cli.env.data_fd);
+	cli.env.data_fd = init_sock(cli.env);
+	cli.env = bind_sock(cli.env, &cli.env.data_fd, &port);
+	addrLength = sizeof(sin);
+	getsockname(cli.fd, (struct sockaddr*)&sin, &addrLength);
+	ft_bzero(inet, 12);
+	inet[10] = 0xFF;
+	inet[11] = 0xFF;
+	if (ft_memcmp(inet, sin.sin6_addr.s6_addr, 12) == 0)
+	{
+		S_MESSAGE(227, cli.fd, sin.sin6_addr.s6_addr[12],
+			sin.sin6_addr.s6_addr[13], sin.sin6_addr.s6_addr[14],
+			sin.sin6_addr.s6_addr[15], (port >> 8) & 0xFF, port & 0xFF);
+		cli.istransferable = TRUE;
+	}
+	else
+		E_MESSAGE(503, cli.fd);
+	return (cli);
+}
+
+t_cli		handle_epsv(t_env UNUSED(env), t_cli cli, char *UNUSED(str))
+{
+	struct sockaddr_in6	localAddr;
+	socklen_t			addrLength;
 	unsigned short		port;
 
 	port = 0;
@@ -64,9 +92,7 @@ t_cli		handle_pasv(t_env UNUSED(env), t_cli cli, char *UNUSED(str))
 	addrLength = sizeof(localAddr);
 	getsockname(cli.fd, (struct sockaddr*)&localAddr,
 			&addrLength);
-	args = ft_strsplit2(inet_ntoa(localAddr.sin_addr), '.');
-	S_MESSAGE(227, cli.fd, args[0], args[1], args[2], args[3],
-			(port >> 8) & 0xff, port & 0xff);
+	S_MESSAGE(229, cli.fd, port);
 	cli.istransferable = TRUE;
 	return (cli);
 }

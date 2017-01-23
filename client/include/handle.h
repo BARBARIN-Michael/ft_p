@@ -6,7 +6,7 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/29 11:56:53 by barbare           #+#    #+#             */
-/*   Updated: 2017/01/23 16:30:29 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/23 19:27:33 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,11 @@ t_cli                   handle_quit(t_cli cli, t_env env, char *cmd);
 t_cli					handle_user(t_cli cli, t_env env, char *cmd);
 t_cli					handle_pass(t_cli cli, t_env env, char *cmd);
 t_cli					handle_pasv(t_cli cli, t_env env, char *cmd);
+t_cli					handle_epsv(t_cli cli, t_env env, char *cmd);
 t_cli					handle_type(t_cli cli, t_env env, char *cmd);
 t_cli					handle_help(t_cli cli, t_env env, char *cmd);
+t_cli					handle_lls(t_cli cli, t_env env, char *cmd);
+t_cli					handle_lcd(t_cli cli, t_env env, char *cmd);
+t_cli					handle_lpwd(t_cli cli, t_env env, char *cmd);
 
 #endif

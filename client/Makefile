@@ -6,7 +6,7 @@
 #    By: mbarbari <mbarbari@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/04/07 16:55:33 by mbarbari          #+#    #+#              #
-#    Updated: 2017/01/23 15:12:43 by barbare          ###   ########.fr        #
+#    Updated: 2017/01/23 19:25:19 by barbare          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,6 +27,7 @@ CLI_SRCS = 	src/client.c \
     		src/handle_quit.c \
     		src/handle_type.c \
     		src/handle_pasv.c \
+    		src/handle_local.c \
     		src/handle_user_password.c \
     		src/send.c \
     		src/main.c

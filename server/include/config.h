@@ -6,7 +6,7 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/24 17:30:51 by barbare           #+#    #+#             */
-/*   Updated: 2017/01/23 12:29:54 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/23 19:16:57 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 # define PATH_DIR_MAX        4000
 
 extern char **environ;
+
 # if __WIN32__
     # define SYSTEM "WIN32"
 	# define CRLF "\r\n"
@@ -42,8 +43,6 @@ extern char **environ;
 # define IN_ADDR struct in_addr
 
 # define EXEC(EXE, ARGS) execve(EXE, ARGS, environ);
-
-# define SALT                "UnFtpSecure"
 
 # define MESS_USAGE          "usage : -b [backlog] -p [authorized_file] [port]"
 
@@ -77,7 +76,7 @@ struct  s_env
     int                 control_fd;
     int                 data_fd;
     unsigned int        isrun;
-    struct sockaddr_in  cli_addr;
+    struct sockaddr_in6  cli_addr;
     struct hostent      *host;
     struct protoent     *proto;
 	t_serv				config;

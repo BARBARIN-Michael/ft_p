@@ -6,7 +6,7 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/20 09:40:52 by barbare           #+#    #+#             */
-/*   Updated: 2017/01/23 13:39:04 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/23 21:10:15 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,24 +21,26 @@
 int		sock_data(t_cli cli, t_env env)
 {
 	int					fd;
-    struct sockaddr_in  sockaddr;
+    struct sockaddr_in6  sockaddr;
 	struct hostent		*host;
 	struct protoent		*proto;
 
 	if ((proto = getprotobyname("tcp")) == NULL ||
-			!(fd = socket(PF_INET, SOCK_STREAM, env.proto->p_proto)))
+			!(fd = socket(PF_INET6, SOCK_STREAM, env.proto->p_proto)))
 	{
 		FAILED("Cannot open socket !");
 		exit (SOCKET_ERROR);
 	}
-	host = gethostbyname(cli.dtp_addr);
-	if (!(fd = socket(PF_INET, SOCK_STREAM, proto->p_proto)))
+	if (!(host = gethostbyname2(cli.dtp_addr, AF_INET)) &&
+			!(host = gethostbyname2(cli.dtp_addr, AF_INET6)))
+		SOCKET_ERRNO("Host name error!");
+	if (!(fd = socket(PF_INET6, SOCK_STREAM, proto->p_proto)))
 		SOCKET_ERRNO("Data Socket error!");
 	ft_bzero(&sockaddr, sizeof(sockaddr));
-    sockaddr.sin_family = AF_INET;
-    sockaddr.sin_port = htons(cli.dtp_port);
-    sockaddr.sin_addr = *(IN_ADDR *)host->h_addr;
-	if (connect(fd, (SOCKADDR*)&sockaddr, sizeof(SOCKADDR)) == ERROR)
+    sockaddr.sin6_family = AF_INET6;
+    sockaddr.sin6_port = htons(cli.dtp_port);
+    ft_memcpy(&sockaddr.sin6_addr, host->h_addr, sizeof(sockaddr.sin6_addr));
+	if (connect(fd, (struct sockaddr *)&sockaddr, sizeof(sockaddr)) == ERROR)
 		SOCKET_ERRNO("Connect error data socket %s!", cli.addr);
 	return (fd);
 }

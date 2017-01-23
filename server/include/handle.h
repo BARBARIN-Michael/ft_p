@@ -6,7 +6,7 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/21 14:12:20 by barbare           #+#    #+#             */
-/*   Updated: 2017/01/23 12:28:47 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/23 20:35:59 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,9 @@ struct      s_cli
     int                 fd;
 	int					type_transfer;
 	int					fd_transfer;
-    char                user[PATH_MAX];
     char                *path_server;
+    char                user[PATH_MAX];
+    char                access[PATH_MAX];
     char                pass[PATH_MAX];
     char                home[PATH_MAX];
     char                auth[PATH_MAX];
@@ -53,6 +54,7 @@ t_cli                   handle_get(t_env env, t_cli cli, char *param);
 t_cli					handle_type(t_env env, t_cli cli, char *param);
 t_cli					handle_port(t_env env, t_cli cli, char *str);
 t_cli					handle_pasv(t_env env, t_cli cli, char *str);
+t_cli					handle_epsv(t_env env, t_cli cli, char *str);
 
 unsigned long           getcommand(char *str);
 

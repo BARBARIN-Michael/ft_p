@@ -6,7 +6,7 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/29 12:01:54 by barbare           #+#    #+#             */
-/*   Updated: 2017/01/23 16:32:20 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/23 20:53:05 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,10 @@ t_cli					handle_help(t_cli cli, t_env env, char *cmd)
 	(void)cli;
 	(void)env;
 	(void)cmd;
-	dprintf(1, "\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n", "ls", "cd", "pwd",
-			"quit",	"user", "pass", "pasv", "type",	"help");
+	dprintf(1, "\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
+			"ls", "cd", "pwd",
+			"quit",	"user", "pass", "pasv", "epsv", "lls", 
+			"lcd", "lpwd", "type", "help");
 	return (cli);
 }
 
@@ -37,9 +39,13 @@ static void                 init_cmd_unix(char **cmd)
     cmd[4] = "user";
     cmd[5] = "pass";
     cmd[6] = "pasv";
-    cmd[7] = "type";
-	cmd[8] = "help";
-    cmd[9] = (void*)0;
+    cmd[7] = "epsv";
+    cmd[8] = "type";
+	cmd[9] = "help";
+	cmd[10] = "lls";
+	cmd[11] = "lcd";
+	cmd[12] = "lpwd";
+    cmd[13] = (void*)0;
 }
 
 static void                 init_fct_ftp(t_fct_cmd *cmd)
@@ -51,9 +57,13 @@ static void                 init_fct_ftp(t_fct_cmd *cmd)
     cmd[4] = &handle_user;
     cmd[5] = &handle_pass;
     cmd[6] = &handle_pasv;
-    cmd[7] = &handle_type;
-    cmd[8] = &handle_help;
-    cmd[9] = (void*)0;
+    cmd[7] = &handle_epsv;
+    cmd[8] = &handle_type;
+    cmd[9] = &handle_help;
+    cmd[10] = &handle_lls;
+    cmd[11] = &handle_lcd;
+    cmd[12] = &handle_lpwd;
+    cmd[13] = (void*)0;
 }
 
 t_cli                handle_control(t_cli cli, t_env env, char *cmd)

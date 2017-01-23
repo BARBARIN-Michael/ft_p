@@ -6,7 +6,7 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/23 17:58:59 by barbare           #+#    #+#             */
-/*   Updated: 2017/01/20 14:47:33 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/23 20:35:19 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ static t_cli    reset_user(t_cli cli)
 static t_cli	set_user(t_cli cli, char **user)
 {
 	snprintf(cli.user, PATH_MAX, "%s", user[0]);
+	snprintf(cli.access, PATH_MAX, "%s", user[1]);
 	snprintf(cli.pass, PATH_MAX, "%s", user[1]);
 	snprintf(cli.home, PATH_MAX, "%s%s", cli.path_server, user[2]);
 	if (cli.pass[0] != '\0')

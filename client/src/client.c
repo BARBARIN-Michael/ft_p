@@ -6,7 +6,7 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/28 14:53:44 by barbare           #+#    #+#             */
-/*   Updated: 2017/01/23 15:19:40 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/23 20:47:16 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,12 +38,15 @@ int            server_isOK(t_cli cli)
 
 t_env           init_client(t_cli cli, t_env env)
 {
+	socklen_t			addrLength;
+
     ft_bzero(&env.cli_addr, sizeof(env.cli_addr));
-    env.cli_addr.sin_family = AF_INET;
-    env.cli_addr.sin_port = htons(cli.port);
-    env.cli_addr.sin_addr = *(IN_ADDR *)env.host->h_addr;
+    env.cli_addr.sin6_family = AF_INET6;
+    env.cli_addr.sin6_port = htons(cli.port);
+    env.cli_addr.sin6_addr = in6addr_any;
+	addrLength = sizeof(env.cli_addr);
     STATUS("Connecting to %s\n", cli.addr);
-    if (connect(cli.sock.pi.fdin, (SOCKADDR*)&env.cli_addr, sizeof(SOCKADDR)) == ERROR)
+    if (connect(cli.sock.pi.fdin, (struct sockaddr *)&env.cli_addr, addrLength) == ERROR)
     	SOCKET_ERRNO("Connect error %s!", cli.addr);
     return (env);
 }
@@ -53,17 +56,18 @@ t_env           init_socket(t_cli cli, t_env env)
     int     fd;
 
     if ((env.proto = getprotobyname("tcp")) == NULL ||
-            !(fd = socket(PF_INET, SOCK_STREAM, env.proto->p_proto)))
+            !(fd = socket(PF_INET6, SOCK_STREAM, env.proto->p_proto)))
     {
         FAILED("Cannot open soint !");
         exit (SOCKET_ERROR);
     }
-    STATUS("Resolving address of %s\n", cli.addr);
-    if ((env.host = gethostbyname(cli.addr)) == NULL)
-    {
-        FAILED("Host %s not found !", cli.addr);
-        exit (SOCKET_ERROR);
-    }
+	STATUS("Resolving address of %s\n", cli.addr);
+	if (((env.host = gethostbyname2(cli.addr, AF_INET)) == NULL) &&
+			((env.host = gethostbyname2(cli.addr, AF_INET6)) == NULL))
+	{
+		FAILED("Host %s not found !", cli.addr);
+		exit (SOCKET_ERROR);
+	}
 	env.cli_fd = fd;
     return (env);
 }

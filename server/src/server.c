@@ -6,7 +6,7 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/19 19:14:19 by barbare           #+#    #+#             */
-/*   Updated: 2017/01/23 12:48:45 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/23 18:42:57 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int			init_sock(t_env env)
 	len = sizeof(opt);
     if ((env.proto = getprotobyname("tcp")) == NULL)
         exit(SOCKET_ERROR);
-    if (!(fd = socket(PF_INET, SOCK_STREAM, env.proto->p_proto)))
+    if (!(fd = socket(PF_INET6, SOCK_STREAM, env.proto->p_proto)))
 		SOCKET_ERRNO("Cannot open socket !")
 	else if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt, len) < 0)
 		SOCKET_ERRNO("setsockopt(SO_REUSEADDR) failed")
@@ -50,29 +50,24 @@ t_env           init_sockcontrol(t_env env)
 
 t_env		bind_sock(t_env env, int *fd, unsigned short *port)
 {
-    struct sockaddr_in  sin;
+    struct sockaddr_in6  sin;
 	socklen_t			len;
 
 
 	errno = 0;
 	len = sizeof(sin);
     ft_bzero(&sin, sizeof(sin));
-    sin.sin_family = AF_INET;
-    sin.sin_port = htons(*port);
-    sin.sin_addr.s_addr = htonl(INADDR_ANY);
-    if ((bind(*fd, (SOCKADDR *)&sin, sizeof(SOCKADDR))) == ERROR)
+    sin.sin6_family = AF_INET6;
+    sin.sin6_port = htons(*port);
+    sin.sin6_addr = in6addr_any;
+    if ((bind(*fd, (struct sockaddr *)&sin, sizeof(sin))) == ERROR)
 	{
 		dprintf(1, "BIND : %s\n", strerror(errno));
         SOCKET_ERRNO("Port %d is already used!", *port);
-		close(*fd);
-		*fd = -1;
 		return (env);
 	}
-	if(getsockname(*fd, (SOCKADDR *)&sin, &len) == 0 && sin.sin_family == AF_INET)
-	{
-		*port = ntohs(sin.sin_port);
-		dprintf(1, "Port : %d\n", *port);
-	}
+	getsockname(*fd, (SOCKADDR *)&sin, &len);
+	*port = ntohs(sin.sin6_port);
     listen(*fd, env.config.backlog);
 	return (env);
 }
@@ -94,24 +89,24 @@ void    run(t_env env)
 	s = (struct stat){0};
     len = sizeof(SOCKADDR);
     cli = (t_cli){0};
-    if ((cli.fd = accept(env.control_fd, (SOCKADDR*)&env.cli_addr, &len)))
-        if (fork() == 0)
-        {
+	if ((cli.fd = accept(env.control_fd, (SOCKADDR*)&env.cli_addr, &len)))
+		if (fork() == 0)
+		{
 			dprintf(STDOUT_FILENO, "Client Connected : %d\n", cli.fd);
-            S_MESSAGE(220, cli.fd);
-            cli.path_server = env.config.path;
-            snprintf(cli.auth, PATH_MAX, "%s/%s",
+			S_MESSAGE(220, cli.fd);
+			cli.path_server = env.config.path;
+			snprintf(cli.auth, PATH_MAX, "%s/%s",
 					env.config.path, env.config.authorized);
 			snprintf(cli.home, PATH_MAX, "/dir/anonymous");
 			cli.istransferable = FALSE;
 			cli.type_transfer = ASCII;
 			if (stat(cli.home, &s) == -1)
 				mkdir(cli.home, 0700);
-            chdir(cli.home);
+			chdir(cli.home);
 			cli.env = env;
-            handle_cli(env, cli);
-        }
-    run(env);
+			handle_cli(env, cli);
+		}
+	run(env);
 }
 
 void    handle_cli(t_env env, t_cli cli)
