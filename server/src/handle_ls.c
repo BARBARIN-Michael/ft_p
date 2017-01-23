@@ -6,7 +6,7 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/20 18:51:13 by barbare           #+#    #+#             */
-/*   Updated: 2016/12/29 18:18:04 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/23 16:22:38 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,83 +20,86 @@
 #include "message.h"
 #include "handle.h"
 #include "tool.h"
+#include "server.h"
 
-#ifndef PATH_MAX
-    #define PATH_MAX        4096
-#endif
-
-
-const char          *error_ls(int error)
+static int                parse_args(char **args)
 {
-    static const char     *str_error[5] = {
-        STR_UNKNOWERROR, STR_NOTACCESS, STR_BADPATH, STR_UNKNOWERROR
-    };
-    return (error < -3 ? str_error[3] : str_error[-error]);
+	unsigned int        i;
+
+	i = -1;
+	while (args[++i])
+	{
+		if (args[i][0] != '-')
+		{
+			if (access(args[i], 0 | F_OK) != 0)
+				return (ERROR);
+			else if (access(args[i], 0 | F_OK | R_OK) != 0 ||
+					lvl_dir(args[i]) < 0)
+				return (ERROR);
+		}
+	}
+	return (0);
 }
 
-static int                parse_args(t_cli cli, char **args)
-{
-    unsigned int        i;
-    int                 ret;
-
-    i = -1;
-    while (args[++i])
-        if (args[i][0] != '-')
-        {
-            if ((ret = access(args[1], 0 | F_OK)) != 0)
-                return (ERROR);
-            else if ((ret = access(args[1], 0 | F_OK | R_OK) != 0 ||
-                lvl_dir(args[1])) < 0)
-                return (ERROR);
-        }
-    return (0);
-}
-
-void                fork_ls(t_cli cli, char **args)
+void                fork_ls(t_cli cli, t_env env, char **args)
 {
     int         ret;
+	int			pid[2];
 
+	pipe(pid);
     if ((ret = fork()) == 0)
     {
-        dup2(cli.fd, STDOUT_FILENO);
-        dup2(cli.fd, STDERR_FILENO);
-        S_MESSAGE(150, cli.fd)
-        write(cli.fd, CYAN, ft_strlen(CYAN));
+        close(pid[0]);
+        dup2(pid[1], STDOUT_FILENO);
         EXEC("/bin/ls", args);
-        ft_putendl_fd(C_RED"Fork error in function ls", STDERR_FILENO);
+        ft_putendl_fd("Fork error in function ls", STDERR_FILENO);
+		E_MESSAGE(451, cli.fd);
     }
     if (ret == ERROR)
         E_MESSAGE(425, cli.fd)
-    else
-    {
-        wait(NULL);
-        S_MESSAGE(226, cli.fd)
-        S_MESSAGE(250, cli.fd)
-    }
+	else
+	{
+		close(pid[1]);
+		transfer_crlf(pid[0], env.dtp_fd, "\n", "\r\n");
+		wait(NULL);
+    	S_MESSAGE(226, cli.fd)
+	}
+	free(args);
 }
 
-t_cli        handle_ls(t_cli cli, char *str)
+t_cli        handle_ls(t_env UNUSED(env), t_cli cli, char *str)
 {
     int             nbargs;
     char            **args;
     char            path[PATH_MAX];
 
-    args = ft_nstrsplit2(str, ' ', ((nbargs = count_args(str, ' ')) + 1));
-    if (nbargs > 1)
-    {
-        if (parse_args(cli, &args[1]) != 0)
-        {
-            free(args);
-            E_MESSAGE(501, cli.fd)
-            return (cli);
-        }
-    }
-    else
-    {
-        getcwd(path, PATH_MAX);
-        args[nbargs] = path;
-    }
-    fork_ls(cli, args);
-    free(args);
+	ft_bzero(path, PATH_MAX);
+	if (cli.isconnected == TRUE)
+	{
+		args = ft_nstrsplit2(str, ' ', ((nbargs = count_args(str, ' ')) + 2));
+		args[0] = ft_strdup("/bin/ls");
+    	if (nbargs >= 1)
+    	{
+    	    if (parse_args(&args[1]) != 0)
+    	    {
+    	        free(args);
+    	        E_MESSAGE(501, cli.fd);
+    	        return (cli);
+    	    }
+    	}
+    	else
+    	{
+    	    getcwd(path, PATH_MAX);
+    	    args[nbargs + 1] = path;
+			args[nbargs + 2] = NULL;
+    	}
+        S_MESSAGE(150, cli.fd)
+		cli.env = server_accept_dtp(cli.env);
+    	fork_ls(cli, cli.env, args);
+		free(args[0]);
+	}
+	else 
+		E_MESSAGE(530, cli.fd);
+	cli.env = server_close_dtp(cli.env);
     return (cli);
 }

@@ -1,23 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   tool.h                                             :+:      :+:    :+:   */
+/*   handle_quit.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/12/21 14:12:20 by barbare           #+#    #+#             */
-/*   Updated: 2017/01/23 15:20:56 by barbare          ###   ########.fr       */
+/*   Created: 2017/01/06 11:23:47 by barbare           #+#    #+#             */
+/*   Updated: 2017/01/20 09:37:08 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef TOOL_H
-# define TOOL_H
+#include "libft.h"
+#include "handle.h"
+#include "error.h"
+#include "message.h"
+#include "tool.h"
 
-unsigned long           djb2(const char *str, unsigned int size);
-int                     lvl_dir(char *dir);
-unsigned int            count_args(char *args, int c);
-void					transfer_crlf(int fd, int cli, char *o, char *n);
-void					transfer_binary(int fd, int cli);
-void                    print_time(char *color);
-
-#endif
+t_cli        handle_quit(t_env UNUSED(env), t_cli cli, char *str)
+{
+	(void)str;
+	S_MESSAGE(221, cli.fd);
+    dprintf(1, C_CYAN"Client %d : %sDISCONNECT\n"C_NONE, cli.fd, C_BLUE);
+	close(cli.fd);
+    exit(0);
+}

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   handle_ls.c                                        :+:      :+:    :+:   */
+/*   handle_user_password.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/12/29 13:40:02 by barbare           #+#    #+#             */
-/*   Updated: 2017/01/23 14:22:56 by barbare          ###   ########.fr       */
+/*   Created: 2017/01/06 14:22:56 by barbare           #+#    #+#             */
+/*   Updated: 2017/01/23 14:16:37 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,31 +15,38 @@
 #include "config.h"
 #include "read.h"
 #include "client.h"
-#include <stdio.h>
-#include <sys/wait.h>
 
-t_cli            handle_ls(t_cli cli, t_env env, char *cmd)
+t_cli            handle_user(t_cli cli, t_env UNUSED(env), char *cmd)
 {
 	char			buf[PATH_MAX];
 	int				id;
+	int				err;
 
 	buf[0] = '\0';
-	send_request("LIST", cmd, cli.sock.pi.fdin);
+	send_request("USER", cmd, cli.sock.pi.fdin);
 	cli.sock.pi = ft_stream_get_protocol(cli.sock.pi, buf, PATH_MAX, PROT);
 	id = getheader(buf);
-	if (protocol(buf) && (id == 125 || id == 150))
-	{
-		cli.sock.dtp = set_dtp_stdout(cli, env);
-		if ((fork() == 0))
-		{
-			cli.sock.dtp = ft_stream_read_full(cli.sock.dtp, 0 | F_MOVE);
-			exit(0);
-		}
-		wait(NULL);
-		cli.sock.pi = ft_stream_get_protocol(cli.sock.pi, buf, PATH_MAX, PROT);
-		is_success (protocol(buf));
-		close(cli.sock.dtp.fdin);
-	}
+	if ((err = protocol(buf)) == TRUE &&
+			(id == 230 || id == 331 || id == 332))
+		is_success(TRUE);
+	else
+		is_success(FALSE);
+	return (cli);
+}
+
+t_cli			handle_pass(t_cli cli, t_env UNUSED(env), char *cmd)
+{
+	char			buf[PATH_MAX];
+	int				id;
+	int				err;
+
+	buf[0] = '\0';
+	send_request("PASS", cmd, cli.sock.pi.fdin);
+	cli.sock.pi = ft_stream_get_protocol(cli.sock.pi, buf, PATH_MAX, PROT);
+	id = getheader(buf);
+	if ((err = protocol(buf)) == TRUE &&
+			(id == 230 || id == 202))
+		is_success(TRUE);
 	else
 		is_success(FALSE);
 	return (cli);

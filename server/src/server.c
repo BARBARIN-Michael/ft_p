@@ -6,13 +6,14 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/19 19:14:19 by barbare           #+#    #+#             */
-/*   Updated: 2016/12/28 14:26:15 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/23 12:48:45 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 #include <stdio.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 #include "error.h"
 #include "message.h"
 #include "handle.h"
@@ -20,90 +21,116 @@
 #include "server.h"
 #include "libft.h"
 
+#include <errno.h>
 
-t_env           init(t_serv config)
+int			init_sock(t_env env)
 {
-    t_env   env;
+	int opt;
+	int len;
+	int fd;
 
+	opt = 1;
+	len = sizeof(opt);
     if ((env.proto = getprotobyname("tcp")) == NULL)
-        exit(SOCKET_ERROR); //TODO
-    if ((env.srv_fd = socket(PF_INET, SOCK_STREAM, env.proto->p_proto)) == ERROR)
-    {
-        ft_putendl_fd("Cannot open socket !", STDERR_FILENO);
-        exit (SOCKET_ERROR);
-    }
-    ft_bzero(&env.srv_addr, sizeof(env.srv_addr));
-    env.srv_addr.sin_family = AF_INET;
-    env.srv_addr.sin_port = htons(config.port);
-    env.srv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    if ((bind(env.srv_fd, (SOCKADDR *)&env.srv_addr,
-                sizeof(SOCKADDR))) == ERROR)
-    {
-        ft_putendl_fd("Cannot bind socket !", STDERR_FILENO);
-        exit (HOST_ERROR);
-    }
-    listen(env.srv_fd, config.backlog);
+        exit(SOCKET_ERROR);
+    if (!(fd = socket(PF_INET, SOCK_STREAM, env.proto->p_proto)))
+		SOCKET_ERRNO("Cannot open socket !")
+	else if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt, len) < 0)
+		SOCKET_ERRNO("setsockopt(SO_REUSEADDR) failed")
+	return (fd);
+}
+
+t_env           init_sockcontrol(t_env env)
+{
+	env.control_fd = init_sock(env);
+	env = bind_sock(env, &env.control_fd, &env.config.control_port);
+	dprintf(STDOUT_FILENO, "Server launch correctly!\n");
     return (env);
 }
 
-void            server(t_serv config, t_env env)
+t_env		bind_sock(t_env env, int *fd, unsigned short *port)
 {
-    env = init(config);
-    env.isrun = TRUE;
-    getcwd(config.path, PATH_MAX);
-    if ((ft_strlen(config.path) + ft_strlen("/dir/")) > PATH_DIR_MAX)
-        ft_putendl_fd("Size path to long", STDERR_FILENO);
-    run(config, env);
+    struct sockaddr_in  sin;
+	socklen_t			len;
+
+
+	errno = 0;
+	len = sizeof(sin);
+    ft_bzero(&sin, sizeof(sin));
+    sin.sin_family = AF_INET;
+    sin.sin_port = htons(*port);
+    sin.sin_addr.s_addr = htonl(INADDR_ANY);
+    if ((bind(*fd, (SOCKADDR *)&sin, sizeof(SOCKADDR))) == ERROR)
+	{
+		dprintf(1, "BIND : %s\n", strerror(errno));
+        SOCKET_ERRNO("Port %d is already used!", *port);
+		close(*fd);
+		*fd = -1;
+		return (env);
+	}
+	if(getsockname(*fd, (SOCKADDR *)&sin, &len) == 0 && sin.sin_family == AF_INET)
+	{
+		*port = ntohs(sin.sin_port);
+		dprintf(1, "Port : %d\n", *port);
+	}
+    listen(*fd, env.config.backlog);
+	return (env);
 }
 
-//TODO setsocketattribute un truc dans le genre et regarde le reuse
+void            server(t_env env)
+{
+    env = init_sockcontrol(env);
+    env.isrun = TRUE;
+    getcwd(env.config.path, PATH_MAX);
+    run(env);
+}
 
-void    run(t_serv config, t_env env)
+void    run(t_env env)
 {
     socklen_t   len;
     t_cli       cli;
+	struct stat s;
 
+	s = (struct stat){0};
     len = sizeof(SOCKADDR);
     cli = (t_cli){0};
-    if ((cli.fd = accept(env.srv_fd, (SOCKADDR*)&env.cli_addr, &len)))
+    if ((cli.fd = accept(env.control_fd, (SOCKADDR*)&env.cli_addr, &len)))
         if (fork() == 0)
         {
+			dprintf(STDOUT_FILENO, "Client Connected : %d\n", cli.fd);
             S_MESSAGE(220, cli.fd);
-            cli.auth = config.authorized;
-            cli.path_global = config.path;
-            chdir(config.path);
-            handle_cli(cli);
+            cli.path_server = env.config.path;
+            snprintf(cli.auth, PATH_MAX, "%s/%s",
+					env.config.path, env.config.authorized);
+			snprintf(cli.home, PATH_MAX, "/dir/anonymous");
+			cli.istransferable = FALSE;
+			cli.type_transfer = ASCII;
+			if (stat(cli.home, &s) == -1)
+				mkdir(cli.home, 0700);
+            chdir(cli.home);
+			cli.env = env;
+            handle_cli(env, cli);
         }
-    run(config, env);
+    run(env);
 }
 
-void    handle_cli(t_cli cli)
+void    handle_cli(t_env env, t_cli cli)
 {
-    char            str[PATH_MAX];
-    int             i;
-    char            **mess;
+	char			path[PATH_MAX];
+    char            *next;
     int             ret;
 
-    str[0] = '\0';
-    ret = recv(cli.fd, str, PATH_MAX, 0);
-    if (ret >= (PATH_MAX - 1) || ret == ERROR)
-        E_MESSAGE(503, cli.fd)
-    else if (str[0] != '\r' && str[0] != '\n' && str[0] != '\0')
-    {
-        str[ret - 1] = '\0';
-        mess = ft_strsplit2(str, '\n');
-        i = 0;
-        while (mess[i])
-        {
-            dprintf(1, C_CYAN"Client %d : %sRSV CMD %s\n"C_NONE, cli.fd, C_BLUE,
-                    mess[i]);
-            cli = handle_cmd(cli, mess[i]);
-            ++i;
-            if (mess[i] == NULL)
-            {
-                free(mess);
-                handle_cli(cli);
-            }
-        }
-    }
+    path[0] = '\0';
+    ret = recv(cli.fd, path, PATH_MAX, 0);
+	if (ret >= (PATH_MAX - 1) || ret == ERROR)
+		E_MESSAGE(503, cli.fd)
+	else if (path[0] != '\r' && path[0] != '\n' && path[0] != '\0')
+	{
+		path[ret] = '\0';
+		if ((next = ft_strstr(path, "\r\n")) != NULL)
+			next[0] = '\0';
+		dprintf(1, C_CYAN"Client %d : %s%s\n"C_NONE, cli.fd, C_BLUE, path);
+		cli = handle_cmd(env, cli, path);
+	}
+	handle_cli(env, cli);
 }

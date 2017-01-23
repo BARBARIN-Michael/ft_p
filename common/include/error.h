@@ -6,7 +6,7 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/20 17:17:03 by barbare           #+#    #+#             */
-/*   Updated: 2016/12/27 18:15:48 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/16 15:29:53 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef ERROR_H
@@ -23,6 +23,10 @@
 # define ERR_UNKNOWERROR -8
 # define ERR_CMDNOTFOUND -9
 # define ERR_USERNOTEXIST -10
+
+# define PRINT_ERR(X, ...) dprintf(STDERR_FILENO, X, ##__VA_ARGS__);
+# define SOCKET_ERRNO(X, ...) {PRINT_ERR(X, ##__VA_ARGS__) exit(SOCKET_ERROR);}
+
 
 # define STR_NOTACCESS C_RED"ERROR: You don't have permission for this file"
 # define STR_BADPATH C_RED"ERROR: No such file or directory"

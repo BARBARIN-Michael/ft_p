@@ -6,13 +6,12 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/28 15:50:33 by barbare           #+#    #+#             */
-/*   Updated: 2016/12/29 19:07:39 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/23 14:06:13 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "tool.h"
-#include "config.h"
 #include "libft.h"
+#include "tool.h"
 #include "handle.h"
 
 static unsigned long       getcommand(char *str)
@@ -36,9 +35,8 @@ t_cli                       handle_cmd(t_cli cli, t_env env, char *cmd)
 
     hash = getcommand(cmd);
     if (hash == djb2("GET", 3) || hash == djb2("PUT", 3))
-        return (cli);
-        //handle_transfer(cmd);
+        handle_transfer(cli, env, cmd);
     else
-        handle_control(cmd, env.cli_fd);
+        cli = handle_control(cli, env, cmd);
     return (cli);
 }

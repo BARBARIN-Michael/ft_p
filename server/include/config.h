@@ -6,7 +6,7 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/24 17:30:51 by barbare           #+#    #+#             */
-/*   Updated: 2016/12/29 18:54:37 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/23 12:29:54 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,15 +26,22 @@
 extern char **environ;
 # if __WIN32__
     # define SYSTEM "WIN32"
+	# define CRLF "\r\n"
 # elif __linux__
-    #define SYSTEM "LINUX"
+    # define SYSTEM "LINUX"
+	# define CRLF "\n"
 # else
-    #define SYSTEM "OSX"
+    # define SYSTEM "OSX"
+	# define CRLF "\n"
 # endif
+# define ASCII 'A'
+# define BINARY 'I'
+
+# define SOCKADDR_IN struct sockaddr_in
+# define SOCKADDR struct sockaddr
+# define IN_ADDR struct in_addr
 
 # define EXEC(EXE, ARGS) execve(EXE, ARGS, environ);
-# define SOCKADDR struct sockaddr_in
-# define IN_ADDR struct in_addr
 
 # define SALT                "UnFtpSecure"
 
@@ -55,7 +62,8 @@ struct      s_options
 
 struct      s_serv
 {
-    unsigned short      port;
+    unsigned short      control_port;
+    unsigned short      data_port;
     char                path[PATH_MAX];
     char                *authorized;
     unsigned int        backlog;
@@ -64,13 +72,15 @@ struct      s_serv
 struct  s_env
 {
     char                **env;
-    int                 cli_fd;
-    int                 srv_fd;
+    int                 cli_fd; //Change to pi_fd
+	int					dtp_fd;
+    int                 control_fd;
+    int                 data_fd;
     unsigned int        isrun;
-    struct sockaddr_in  srv_addr;
     struct sockaddr_in  cli_addr;
     struct hostent      *host;
     struct protoent     *proto;
+	t_serv				config;
 };
 
 t_options               set_short_options(const char **args, int count);

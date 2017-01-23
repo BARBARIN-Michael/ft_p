@@ -1,35 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   server_dtp.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/12/28 15:58:05 by barbare           #+#    #+#             */
-/*   Updated: 2017/01/03 12:46:39 by barbare          ###   ########.fr       */
+/*   Created: 2017/01/18 18:22:15 by barbare           #+#    #+#             */
+/*   Updated: 2017/01/19 18:38:24 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <sys/socket.h>
 #include <stdio.h>
 #include "libft.h"
+#include "server.h"
 #include "config.h"
+#include "handle.h"
 
-static void            usage(char *title)
+t_env		server_accept_dtp(t_env env)
 {
-    dprintf(1, "Usage %s [server address] [port]\n", title);
+	socklen_t				len;
+
+	len = sizeof(env.cli_addr);
+	dprintf(STDOUT_FILENO, "Connecting data ...\n");
+	if ((env.dtp_fd = accept(env.data_fd, (SOCKADDR*)&env.cli_addr, &len)) == -1)
+		dprintf(STDERR_FILENO, "PUTAIN ?????\n");
+	dprintf(STDOUT_FILENO, "Connected for data\n");
+	return (env);
 }
 
-int             main(int ac, char **av)
+t_env		server_close_dtp(t_env env)
 {
-    t_cli cli;
-
-    if (ac < 3)
-        usage(av[0]);
-    else
-    {
-        cli.addr = av[1];
-        cli.port = ft_atoi(av[2]);
-        client(cli);
-    }
-    return (0);
+	close(env.dtp_fd);
+	return (env);
 }

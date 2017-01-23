@@ -6,22 +6,39 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/29 17:33:22 by barbare           #+#    #+#             */
-/*   Updated: 2016/12/29 18:26:47 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/23 15:12:16 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#define "libft.h"
-#define "tool.h"
+#include <unistd.h>
+#include <stdio.h>
+#include <time.h>
+#include "libft.h"
+#include "tool.h"
+#include "message.h"
 
-unsigned long   hash(unsigned char *str)
+void            print_time(char *color)
+{
+    time_t      t1;
+    struct tm   *local;
+
+    time(&t1);
+    local = localtime(&t1);
+    dprintf(1, "%s%02d:%02d:%02d\t", color,
+            local->tm_hour, local->tm_min, local->tm_sec);
+}
+
+unsigned long   djb2(const char *str, unsigned int size)
 {
     unsigned long hash;
     int c;
 
     hash = 5381;
-    while ((c = *str++))
+    while (size && (c = *str++))
+    {
         hash = ((hash << 5) + hash) + c;
-
+        --size;
+    }
     return (hash);
 }
 
@@ -42,13 +59,14 @@ int             lvl_dir(char *dir)
     return (lvl);
 }
 
-int             count_args(char *args, int c)
+unsigned int    count_args(char *args, int c)
 {
     int     count;
     int     debouncing;
     int     i;
 
     count = 0;
+    i = 0;
     debouncing = 0;
     while (args[i] != '\0')
     {
@@ -59,11 +77,7 @@ int             count_args(char *args, int c)
         }
         else
             debouncing = 0;
+        ++i;
     }
-    return (++count);
-}
-
-int             is_server_status(char *response)
-{
-    return (ft_isdigit(response[0]));
+    return (count);
 }

@@ -1,25 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server.h                                           :+:      :+:    :+:   */
+/*   handle_quit.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/12/21 12:20:05 by barbare           #+#    #+#             */
-/*   Updated: 2017/01/20 18:17:41 by barbare          ###   ########.fr       */
+/*   Created: 2017/01/06 12:45:18 by barbare           #+#    #+#             */
+/*   Updated: 2017/01/23 13:54:23 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#ifndef SERVER_H
-# define SERVER_H
 
+#include <stdio.h>
+#include "libft.h"
+#include "ft_stream.h"
 #include "config.h"
+#include "read.h"
+#include "client.h"
 
-t_env           init(t_serv conf);
-void            server(t_env env);
-void            run(t_env env);
-t_env		    bind_sock(t_env env, int *fd, unsigned short *port);
-t_env			server_accept_dtp(t_env env);
-t_env			server_close_dtp(t_env env);
-int				init_sock(t_env env);
+int		singleton_sig(int quit)
+{
+	static int	isquit = 0;
 
-#endif
+	if (quit != 0)
+	isquit = quit;
+	return (isquit);
+}
+
+void	handle_sig(int sig)
+{
+	singleton_sig(sig);
+}
+
+t_cli            handle_quit(t_cli cli, t_env UNUSED(env), char UNUSED(cmd))
+{
+	send_request("QUIT", NULL, cli.sock.pi.fdin);
+	exit(0);
+	return (cli);
+}

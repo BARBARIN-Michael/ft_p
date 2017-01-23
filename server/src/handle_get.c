@@ -6,35 +6,74 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/23 16:56:25 by barbare           #+#    #+#             */
-/*   Updated: 2016/12/27 19:04:22 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/23 16:23:02 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <libft.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <fcntl.h>
 #include <stdio.h>
+#include <sys/stat.h>
+#include <sys/socket.h>
 #include <sys/wait.h>
+#include "message.h"
 #include "config.h"
 #include "error.h"
 #include "handle.h"
+#include "tool.h"
+#include "server.h"
 
-static int         test_file(char **args, int fd)
+static int         test_file(char *args, int fd)
 {
-    (void)fd;
-    if (access(args[1], 0 | F_OK) != 0)
+	char		path[PATH_MAX];
+
+	getcwd(path, PATH_MAX);
+	ft_strcat(path, "/");
+	ft_strcat(path, args);
+    if (access(path, 0 | F_OK) != 0)
     {
+		E_MESSAGE(501, fd);
         ft_putendl_fd(STR_BADPATH, STDERR_FILENO);
         return (ERR_BADPATH);
+    }
+    else if (access(path, 0 | F_OK | R_OK) != 0 ||
+        lvl_dir(args) < 0)
+    {
+		E_MESSAGE(502, fd);
+        ft_putendl_fd(STR_NOTACCESS, STDERR_FILENO);
+        return (ERR_NOTACCESS);
     }
     return (0);
 }
 
-t_cli         handle_get(t_cli cli, char *param)
+t_cli         handle_get(t_env UNUSED(env), t_cli cli, char *param)
 {
-    char **args;
+    char	**args;
+	int		fd;
 
-    args = ft_strsplit2(param, ' ');
-    test_file(args, cli.fd);
+	if (cli.isconnected)
+	{
+		args = ft_strsplit2(param, ' ');
+    	if (test_file(args[1], cli.fd) < 0)
+			return (cli);
+		S_MESSAGE(150, cli.fd);
+		cli.env = server_accept_dtp(cli.env);
+		fd = open(args[1], O_RDONLY);
+		if (fd != -1 && fork() == 0)
+		{
+			if (cli.type_transfer == BINARY)
+				transfer_binary(fd, cli.env.dtp_fd);
+			else if (cli.type_transfer == ASCII)
+				transfer_crlf(fd, cli.env.dtp_fd, CRLF, "\r\n");
+			else
+				E_MESSAGE(426, cli.fd);
+			exit(0);
+		}
+		cli.env = server_close_dtp(cli.env);
+		wait(NULL);
+		S_MESSAGE(250, cli.fd);
+	}
     return (cli);
 }

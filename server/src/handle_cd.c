@@ -6,7 +6,7 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/21 14:47:05 by barbare           #+#    #+#             */
-/*   Updated: 2016/12/29 18:20:40 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/19 16:08:25 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,32 +23,37 @@
 
 static int         test_dir(t_cli cli, char *dir)
 {
-    int     ret;
-
-    if ((ret = access(dir, F_OK)) != 0)
+    dprintf(1, "Lecture du dir et du cli.home : %s %s\n", dir, cli.home);
+    if (access(dir, F_OK) != 0)
+	{
         E_MESSAGE(501, cli.fd)
-    else if ((ret = access(dir, F_OK | R_OK)) != 0 || lvl_dir(dir) < 0)
+		return (ERROR);
+	}
+    else if (access(dir, 0 | F_OK | R_OK) != 0 || lvl_dir(dir) < lvl_dir(cli.home))
+	{
         E_MESSAGE(501, cli.fd)
-    if (ret != 0)
         return (ERROR);
+	}
     return (0);
 }
 
-t_cli         handle_cd(t_cli cli, char *param)
+t_cli         handle_cd(t_env UNUSED(env), t_cli cli, char *param)
 {
     char        **args;
+    char        olddir[PATH_MAX];
     char        dir[PATH_MAX];
 
+    dir[0] = '\0';
     args = ft_strsplit2(param, ' ');
-    getcwd(dir, PATH_MAX);
-    ft_strcat(dir, "/");
-    ft_strcat(dir, args[1]);
-    if (test_dir(cli, dir) != ERROR)
-    {
-        if (chdir(dir) != ERROR)
-            S_MESSAGE(250, cli.fd)
-        else
-            E_MESSAGE(421, cli.fd)
-    }
+    getcwd(olddir, PATH_MAX);
+	snprintf(dir, PATH_MAX, "%s/%s/", olddir, args[1]);
+	dprintf (1, "On cd sur %s\n", dir);
+    chdir(dir);
+	getcwd(dir, PATH_MAX);
+	dprintf (1, "On cd sur %s\n", dir);
+	if (test_dir(cli, dir) != ERROR)
+		S_MESSAGE(250, cli.fd)
+	else
+		chdir(olddir);
     return (cli);
 }

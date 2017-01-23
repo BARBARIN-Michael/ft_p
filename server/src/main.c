@@ -6,7 +6,7 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/04 09:55:16 by barbare           #+#    #+#             */
-/*   Updated: 2016/12/28 10:38:34 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/20 15:10:51 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <libft.h>
@@ -61,14 +61,20 @@ int                 main(int ac, const char **av, const char **envp)
     t_env           env;
 
     (void)env;
-    if (ac < 2)
-        return (usage());
-    if (ft_isdigit(av[ac - 1][0]))
-        config.port = ft_atoi(av[ac - 1]);
-    else
-        return (usage());
-    config = set_config(config, set_short_options(&av[1], ac - 1));
+    if (ac >= 2 && av[ac - 2][0] == '-')
+	{
+        config.control_port = 21;
+        config.data_port = 20;
+	}
+	else if (ac >= 2 && ft_isdigit(av[ac - 1][0]))
+	{
+        config.control_port = ft_atoi(av[ac - 1]);
+        config.data_port = config.control_port - 1;
+	}
+	else
+		return (usage());
+    env.config = set_config(config, set_short_options(&av[1], ac - 1));
     env.env = (char **)envp;
-    server(config, env);
+    server(env);
     return (0);
 }
