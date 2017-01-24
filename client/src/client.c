@@ -114,21 +114,23 @@ void    run(t_cli cli, t_env env)
     char            buff[PATH_MAX];
     int             ret;
 
-    buff[0] = '\0';
-	signal(SIGINT, handle_sig);
-	if (singleton_sig(0) != 0)
-		handle_quit(cli, env, NULL);
-    dprintf(STDOUT_FILENO, "\n%sftp>%s ", C_BLUE, C_NONE);
-    ret = read(STDIN_FILENO, buff, PATH_MAX);
-    if (ret >= (PATH_MAX - 1) || ret == ERROR)
-    {
-        FAILED("Error command, max lengh %d!\n", PATH_MAX - 1)
-    }
-    else if (!ft_isspace(buff[0]))
-    {
-        buff[ret] = '\0';
-        cli = handle_cmd(cli, env, buff);
-    }
-    run(cli, env);
+	while (1)
+	{
+		buff[0] = '\0';
+		signal(SIGINT, handle_sig);
+		if (singleton_sig(0) != 0)
+			handle_quit(cli, env, NULL);
+    	dprintf(STDOUT_FILENO, "\n%sftp>%s ", C_BLUE, C_NONE);
+    	ret = read(STDIN_FILENO, buff, PATH_MAX);
+    	if (ret >= (PATH_MAX - 1) || ret == ERROR)
+    	{
+    	    FAILED("Error command, max lengh %d!\n", PATH_MAX - 1)
+    	}
+    	else if (!ft_isspace(buff[0]))
+    	{
+    	    buff[ret] = '\0';
+    	    cli = handle_cmd(cli, env, buff);
+    	}
+	}
 }
 

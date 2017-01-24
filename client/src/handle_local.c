@@ -44,7 +44,7 @@ t_cli            handle_lpwd(t_cli cli, t_env UNUSED(env), char *cmd)
 
 	(void)cmd;
 	getcwd(path, PATH_MAX);
-	dprintf(1, path);
+	dprintf(1, "%s", path);
 	return (cli);
 }
 

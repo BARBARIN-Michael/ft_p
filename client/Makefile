@@ -14,7 +14,7 @@ CC ?= gcc
 CX ?= clang++
 CFLAGS += -g -Wall -Wextra -Werror
 INC = -I./include -I ../common/include -I../common/libs/libft/include -I../common/libs/libftstream/include
-LIBS = -L../common/libs/libft/ -L../common/libs/libftstream/ -lft -lftstream -lcrypt
+LIBS = -L../common/libs/libft/ -L../common/libs/libftstream/ -lft -lftstream
 
 CLI_SRCS = 	src/client.c \
     		src/handle_cmd.c \

@@ -239,7 +239,7 @@
 # define MESS_221 "221 Service closing control connection.\r\n"
 # define MESS_225 "225 Data connection open; no transfer in progress.\r\n"
 # define MESS_226 "226 Closing data connection.\r\n"
-# define MESS_227 "227 Entering Passive Mode (%s,%s,%s,%s,%d,%d).\r\n"
+# define MESS_227 "227 Entering Passive Mode (%d,%d,%d,%d,%d,%d).\r\n"
 # define MESS_230 "230 User logged in, proceed.\r\n"
 # define MESS_250 "250 Requested file action okay, completed.\r\n"
 # define MESS_257 "257 \"%s\".\r\n"

@@ -30,7 +30,7 @@
 t_cli		handle_type(t_env UNUSED(env), t_cli cli, char *str)
 {
 	char	**args;
-	
+
 	args = ft_strsplit2(str, ' ');
 	if (ft_toupper(args[1][0]) == 'A' || ft_toupper(args[1][0] == 'I'))
 	{
@@ -53,6 +53,7 @@ t_cli		handle_pasv(t_env UNUSED(env), t_cli cli, char *UNUSED(str))
 {
 	struct sockaddr_in6	sin;
 	socklen_t			addrLength;
+	char				str[16];
 	unsigned short		port;
 
 	port = 0;
@@ -62,11 +63,11 @@ t_cli		handle_pasv(t_env UNUSED(env), t_cli cli, char *UNUSED(str))
 	cli.env = bind_sock(cli.env, &cli.env.data_fd, &port);
 	addrLength = sizeof(sin);
 	getsockname(cli.fd, (struct sockaddr*)&sin, &addrLength);
-	if (IN6_IS_ADDR_V4MAPPED(sin.sin6_addr.s6_addr))
+	if (IN6_IS_ADDR_V4MAPPED(&sin.sin6_addr))
 	{
-		S_MESSAGE(227, cli.fd, sin.sin6_addr.s6_addr[12],
-			sin.sin6_addr.s6_addr[13], sin.sin6_addr.s6_addr[14],
-			sin.sin6_addr.s6_addr[15], (port >> 8) & 0xFF, port & 0xFF);
+		ft_memcpy(str, sin.sin6_addr.s6_addr + 12, 4);
+		S_MESSAGE(227, cli.fd, (int)str[0], (int)str[1], (int)str[2],
+			(int)str[3], (port >> 8) & 0xFF, port & 0xFF);
 		cli.istransferable = TRUE;
 	}
 	else

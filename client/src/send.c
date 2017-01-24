@@ -67,5 +67,5 @@ void		send_request(const char *cmd, char *args, int fd)
 		snprintf(buf, PATH_MAX, "%s\r\n", cmd);
 	else
 		snprintf(buf, PATH_MAX, "%s %s\r\n", cmd, args);
-    dprintf(fd, buf);
+    dprintf(fd, "%s", buf);
 }
