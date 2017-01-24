@@ -6,7 +6,7 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/23 17:35:19 by barbare           #+#    #+#             */
-/*   Updated: 2017/01/20 17:42:11 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/24 09:57:54 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -239,7 +239,8 @@
 # define MESS_221 "221 Service closing control connection.\r\n"
 # define MESS_225 "225 Data connection open; no transfer in progress.\r\n"
 # define MESS_226 "226 Closing data connection.\r\n"
-# define MESS_227 "227 Entering Passive Mode (%s,%s,%s,%s,%d,%d).\r\n"
+# define MESS_227 "227 Entering Passive Mode (%d,%d,%d,%d,%d,%d).\r\n"
+# define MESS_229 "229 Entering Extended Passive Mode (|||%d|).\r\n"
 # define MESS_230 "230 User logged in, proceed.\r\n"
 # define MESS_250 "250 Requested file action okay, completed.\r\n"
 # define MESS_257 "257 \"%s\".\r\n"
