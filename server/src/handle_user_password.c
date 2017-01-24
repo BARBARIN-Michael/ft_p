@@ -6,7 +6,7 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/23 17:58:59 by barbare           #+#    #+#             */
-/*   Updated: 2017/01/24 14:55:22 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/24 16:27:42 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,11 @@ t_cli           get_user(t_cli cli, char **users, char *param)
 
     i = -1;
     params = ft_strsplit2(param, ' ');
+    if (params[1] == NULL || params[2] != NULL)
+	{
+        E_MESSAGE(501, cli.fd);
+		return (cli);
+	}
     cli = reset_user(cli);
     while (cli.isconnected == FALSE && users[++i] != NULL)
     {
@@ -71,9 +76,9 @@ t_cli           handle_pass(t_env UNUSED(env), t_cli cli, char *param)
 
 	s = (struct stat){0};
     params = ft_strsplit2(param, ' ');
-    if (params[2] != NULL)
+    if (params[1] == NULL || params[2] != NULL)
         E_MESSAGE(501, cli.fd)
-    if (ft_strncmp(cli.pass, params[1], ft_strlen(cli.pass)) == 0)
+	else if (ft_strncmp(cli.pass, params[1], ft_strlen(cli.pass)) == 0)
 	{
         S_MESSAGE(230, cli.fd)
 		cli.isconnected = TRUE;
