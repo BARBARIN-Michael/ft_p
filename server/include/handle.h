@@ -6,7 +6,7 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/21 14:12:20 by barbare           #+#    #+#             */
-/*   Updated: 2017/01/23 20:35:59 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/24 15:19:59 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void                    init_id(unsigned long id_cmd[]);
 
 void                    init_fct(t_fct_cmd *cmd);
 void                    handle_cli(t_env env, t_cli cli);
-t_cli                   handle_cmd(t_env env, t_cli cli, char *str);
+t_cli                   handle_cmd(t_env env, t_cli cli, char *param);
 t_cli                   handle_syst(t_env env, t_cli cli, char *param);
 t_cli                   handle_ls(t_env env, t_cli cli, char *param);
 t_cli                   handle_pwd(t_env env, t_cli cli, char *param);
@@ -51,10 +51,11 @@ t_cli                   handle_cd(t_env env, t_cli cli, char *param);
 t_cli                   handle_user(t_env env, t_cli cli, char *param);
 t_cli                   handle_pass(t_env env, t_cli cli, char *param);
 t_cli                   handle_get(t_env env, t_cli cli, char *param);
+t_cli					handle_put(t_env env, t_cli cli, char *param);
 t_cli					handle_type(t_env env, t_cli cli, char *param);
-t_cli					handle_port(t_env env, t_cli cli, char *str);
-t_cli					handle_pasv(t_env env, t_cli cli, char *str);
-t_cli					handle_epsv(t_env env, t_cli cli, char *str);
+t_cli					handle_port(t_env env, t_cli cli, char *param);
+t_cli					handle_pasv(t_env env, t_cli cli, char *param);
+t_cli					handle_epsv(t_env env, t_cli cli, char *param);
 
 unsigned long           getcommand(char *str);
 
