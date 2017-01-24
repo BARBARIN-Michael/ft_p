@@ -25,11 +25,14 @@
 #include "tool.h"
 #include "server.h"
 
-t_cli         handle_put(t_env UNUSED(env), t_cli cli, char *param)
+t_cli		handle_put(t_env env, t_cli cli, char *param)
 {
-    char	**args;
+	char	**args;
 	int		fd;
 
+	(void)env;
+	if ((cli.access & 0x01) != 0x01)
+		E_MESSAGE(550, cli.fd);
 	args = ft_strsplit2(param, ' ');
 	fd = open(args[1], O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
 	S_MESSAGE(150, cli.fd);
@@ -44,5 +47,5 @@ t_cli         handle_put(t_env UNUSED(env), t_cli cli, char *param)
 		exit(0);
 	}
 	wait(NULL);
-    return (cli);
+	return (cli);
 }

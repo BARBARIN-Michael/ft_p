@@ -30,13 +30,14 @@ char		*transform_home(char *home, char *pwd)
 	return (&pwd[i]);
 }
 
-t_cli       handle_pwd(t_env UNUSED(env), t_cli cli, char *param)
+t_cli		handle_pwd(t_env env, t_cli cli, char *param)
 {
-    char        buf[PATH_MAX];
+	char		buf[PATH_MAX];
 
-    (void)param;
-    buf[0] = '\0';
-    getcwd(buf, PATH_MAX);
+	(void)env;
+	(void)param;
+	buf[0] = '\0';
+	getcwd(buf, PATH_MAX);
 	S_MESSAGE(257, cli.fd, transform_home(cli.home, buf));
-    return (cli);
+	return (cli);
 }

@@ -25,36 +25,39 @@
 #include "tool.h"
 #include "server.h"
 
-static int         test_file(char *args, int fd)
+static int		test_file(char *args, int fd)
 {
 	char		path[PATH_MAX];
 
 	getcwd(path, PATH_MAX);
 	ft_strcat(path, "/");
 	ft_strcat(path, args);
-    if (access(path, 0 | F_OK) != 0)
-    {
+	if (access(path, 0 | F_OK) != 0)
+	{
 		E_MESSAGE(501, fd);
-        ft_putendl_fd(STR_BADPATH, STDERR_FILENO);
-        return (ERR_BADPATH);
-    }
-    else if (access(path, 0 | F_OK | R_OK) != 0 ||
-        lvl_dir(args) < 0)
-    {
+		ft_putendl_fd(STR_BADPATH, STDERR_FILENO);
+		return (ERR_BADPATH);
+	}
+	else if (access(path, 0 | F_OK | R_OK) != 0 ||
+			lvl_dir(args) < 0)
+	{
 		E_MESSAGE(502, fd);
-        ft_putendl_fd(STR_NOTACCESS, STDERR_FILENO);
-        return (ERR_NOTACCESS);
-    }
-    return (0);
+		ft_putendl_fd(STR_NOTACCESS, STDERR_FILENO);
+		return (ERR_NOTACCESS);
+	}
+	return (0);
 }
 
-t_cli         handle_get(t_env UNUSED(env), t_cli cli, char *param)
+t_cli			handle_get(t_env env, t_cli cli, char *param)
 {
-    char	**args;
+	char	**args;
 	int		fd;
 
+	(void)env;
 	args = ft_strsplit2(param, ' ');
-    if (test_file(args[1], cli.fd) < 0)
+	if ((cli.access & 0x10) != 0x10)
+		E_MESSAGE(550, cli.fd);
+	if (test_file(args[1], cli.fd) < 0)
 		return (cli);
 	S_MESSAGE(150, cli.fd);
 	cli.env = server_accept_dtp(cli.env);
@@ -71,5 +74,5 @@ t_cli         handle_get(t_env UNUSED(env), t_cli cli, char *param)
 	dprintf(1, "close socket\n");
 	cli.env = server_close_dtp(cli.env);
 	wait(NULL);
-    return (cli);
+	return (cli);
 }

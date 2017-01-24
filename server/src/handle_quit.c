@@ -16,11 +16,12 @@
 #include "message.h"
 #include "tool.h"
 
-t_cli        handle_quit(t_env UNUSED(env), t_cli cli, char *str)
+t_cli		handle_quit(t_env env, t_cli cli, char *str)
 {
 	(void)str;
+	(void)env;
 	S_MESSAGE(221, cli.fd);
-    dprintf(1, C_CYAN"Client %d : %sDISCONNECT\n"C_NONE, cli.fd, C_BLUE);
+	dprintf(1, C_CYAN"Client %d : %sDISCONNECT\n"C_NONE, cli.fd, C_BLUE);
 	close(cli.fd);
-    exit(0);
+	exit(0);
 }

@@ -17,22 +17,24 @@
 #include "read.h"
 #include "client.h"
 
-int		singleton_sig(int quit)
+int				singleton_sig(int quit)
 {
-	static int	isquit = 0;
+	static int		isquit = 0;
 
 	if (quit != 0)
-	isquit = quit;
+		isquit = quit;
 	return (isquit);
 }
 
-void	handle_sig(int sig)
+void			handle_sig(int sig)
 {
 	singleton_sig(sig);
 }
 
-t_cli            handle_quit(t_cli cli, t_env UNUSED(env), char UNUSED(cmd))
+t_cli			handle_quit(t_cli cli, t_env env, char cmd)
 {
+	(void)env;
+	(void)cmd;
 	send_request("QUIT", NULL, cli.sock.pi.fdin);
 	exit(0);
 	return (cli);

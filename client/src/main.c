@@ -14,22 +14,23 @@
 #include "libft.h"
 #include "config.h"
 
-static void            usage(char *title)
+static void		usage(char *title)
 {
-    dprintf(1, "Usage %s [server address] [port]\n", title);
+	dprintf(1, "Usage %s [server address] [port]\n", title);
 }
 
-int             main(int ac, char **av)
+int				main(int ac, char **av, char **envp)
 {
-    t_cli cli;
+	t_cli		cli;
 
-    if (ac < 3)
-        usage(av[0]);
-    else
-    {
-        cli.addr = av[1];
-        cli.port = ft_atoi(av[2]);
-        client(cli);
-    }
-    return (0);
+	if (ac < 3)
+		usage(av[0]);
+	else
+	{
+		cli.addr = av[1];
+		cli.port = ft_atoi(av[2]);
+		cli.env = envp;
+		client(cli);
+	}
+	return (0);
 }

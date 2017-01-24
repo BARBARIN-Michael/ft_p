@@ -9,17 +9,12 @@
 /*   Updated: 2017/01/23 20:36:25 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include <libft.h>
-//#ifdef _XOPEN_SOURCE
-    //#include <unistd.h>
-//#elif
-    #include <crypt.h>
-//#endif
 #include "config.h"
 #include "options.h"
 #include "server.h"
 #include "error.h"
-#include <stdio.h> //TODO: a virer
 #include <sys/stat.h>
 #include <fcntl.h>
 
@@ -28,15 +23,15 @@
 #define ROOTPASS "root"
 #define ROOTACCESS "RW"
 
-static int          usage(void)
+static int			usage(void)
 {
-     printf(MESS_USAGE);
-     return (ERROR);
+	printf(MESS_USAGE);
+	return (ERROR);
 }
 
-static t_serv set_config(t_serv config, t_options options)
+static t_serv		set_config(t_serv config, t_options options)
 {
-    int file_auth;
+	int		file_auth;
 
 	if ((options.opts & OPT_B) &&
 			ft_isdigit(options.parameters[OPT_B][0]))
@@ -57,26 +52,25 @@ static t_serv set_config(t_serv config, t_options options)
 	return (config);
 }
 
-int                 main(int ac, const char **av, const char **envp)
+int					main(int ac, const char **av, const char **envp)
 {
-    t_serv    config;
-    t_env           env;
+	t_serv			config;
+	t_env			env;
 
-    (void)env;
-    if (ac >= 2 && av[ac - 2][0] == '-')
+	if (ac >= 2 && av[ac - 2][0] == '-')
 	{
-        config.control_port = 21;
-        config.data_port = 20;
+		config.control_port = 21;
+		config.data_port = 20;
 	}
 	else if (ac >= 2 && ft_isdigit(av[ac - 1][0]))
 	{
-        config.control_port = ft_atoi(av[ac - 1]);
-        config.data_port = config.control_port - 1;
+		config.control_port = ft_atoi(av[ac - 1]);
+		config.data_port = config.control_port - 1;
 	}
 	else
 		return (usage());
-    env.config = set_config(config, set_short_options(&av[1], ac - 1));
-    env.env = (char **)envp;
-    server(env);
-    return (0);
+	env.config = set_config(config, set_short_options(&av[1], ac - 1));
+	env.env = (char **)envp;
+	server(env);
+	return (0);
 }

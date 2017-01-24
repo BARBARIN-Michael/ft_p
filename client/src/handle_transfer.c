@@ -24,7 +24,7 @@
 
 static void		handle_get(t_env env, t_cli cli, char *cmd)
 {
-	char 	buf[PATH_MAX];
+	char	buf[PATH_MAX];
 	int		id;
 
 	send_request("RETR", cmd, cli.sock.pi.fdin);
@@ -36,7 +36,7 @@ static void		handle_get(t_env env, t_cli cli, char *cmd)
 		if (fork() == 0)
 		{
 			(cli.type_transfer == ASCII) ? transfer_crlf(cli.sock.dtp.fdin,
-					cli.sock.dtp.fdout, PROT, CRLF) :
+					cli.sock.dtp.fdout, PROT, "\n") :
 				transfer_binary(cli.sock.dtp.fdin, cli.sock.dtp.fdout);
 			exit(0);
 		}
@@ -51,7 +51,7 @@ static void		handle_get(t_env env, t_cli cli, char *cmd)
 
 static void		handle_put(t_env env, t_cli cli, char *cmd)
 {
-	char 	buf[PATH_MAX];
+	char	buf[PATH_MAX];
 	int		id;
 
 	send_request("STOR", cmd, cli.sock.pi.fdin);
@@ -75,9 +75,9 @@ static void		handle_put(t_env env, t_cli cli, char *cmd)
 		is_success(FALSE);
 }
 
-void		handle_transfer(t_cli cli, t_env env, char *cmd)
+void			handle_transfer(t_cli cli, t_env env, char *cmd)
 {
-	if(!((cli = cli.fct_connect(cli, env, NULL)).istransferable))
+	if (!((cli = cli.fct_connect(cli, env, NULL)).istransferable))
 		return ;
 	if (ft_strncmp(cmd, "get", 3) == 0)
 		handle_get(env, cli, &cmd[4]);

@@ -19,8 +19,8 @@
 
 int			getheader(char *str)
 {
-	char id[4];
-    int     i;
+	char	id[4];
+	int		i;
 
 	i = 0;
 	while (ft_isspace(str[i]))
@@ -31,12 +31,12 @@ int			getheader(char *str)
 	id[1] = str[i + 1];
 	id[2] = str[i + 2];
 	id[3] = '\0';
-    return (ft_atoi(id));
+	return (ft_atoi(id));
 }
 
 int			protocol(char *str)
 {
-	int proto;
+	int		proto;
 
 	proto = str[0] - '0';
 	if (proto >= 4)
@@ -58,7 +58,7 @@ void		is_success(int isok)
 
 void		send_request(const char *cmd, char *args, int fd)
 {
-    char            buf[PATH_MAX];
+	char		buf[PATH_MAX];
 
 	buf[0] = '\0';
 	if (args)
@@ -67,5 +67,5 @@ void		send_request(const char *cmd, char *args, int fd)
 		snprintf(buf, PATH_MAX, "%s\r\n", cmd);
 	else
 		snprintf(buf, PATH_MAX, "%s %s\r\n", cmd, args);
-    dprintf(fd, "%s", buf);
+	dprintf(fd, "%s", buf);
 }

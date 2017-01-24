@@ -14,7 +14,7 @@ CC ?= gcc
 CX ?= clang++
 CFLAGS += -g -Wall -Wextra -Werror
 INC = -I./include -I ../common/include -I../common/libs/libft/include 
-LIBS = -L../common/libs/libft/ -lft -lcrypt
+LIBS = -L../common/libs/libft/ -lft
 
 SRV_SRCS =  src/handle_cmd.c \
             src/handle_system.c \
@@ -22,11 +22,11 @@ SRV_SRCS =  src/handle_cmd.c \
             src/handle_pwd.c \
             src/handle_cd.c \
             src/handle_get.c \
+            src/handle_put.c \
             src/handle_quit.c \
             src/handle_type.c \
             src/handle_user_password.c \
             src/main.c \
-            src/options_com.c \
             src/configure_server.c \
             src/server_dtp.c \
             src/server.c

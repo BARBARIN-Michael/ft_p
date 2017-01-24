@@ -22,9 +22,9 @@
 #include "tool.h"
 #include "server.h"
 
-static int                parse_args(char **args)
+static int			parse_args(char **args)
 {
-	unsigned int        i;
+	unsigned int		i;
 
 	i = -1;
 	while (args[++i])
@@ -41,55 +41,58 @@ static int                parse_args(char **args)
 	return (0);
 }
 
-void                fork_ls(t_cli cli, t_env env, char **args)
+void				fork_ls(t_cli cli, t_env env, char **args)
 {
-    int         ret;
-	int			pid[2];
+	int		ret;
+	int		pid[2];
 
 	pipe(pid);
-    if ((ret = fork()) == 0)
-    {
-        close(pid[0]);
-        dup2(pid[1], STDOUT_FILENO);
-        EXEC("/bin/ls", args);
-        ft_putendl_fd("Fork error in function ls", STDERR_FILENO);
+	if ((ret = fork()) == 0)
+	{
+		close(pid[0]);
+		dup2(pid[1], STDOUT_FILENO);
+		EXEC("/bin/ls", args, cli.env.env);
+		ft_putendl_fd("Fork error in function ls", STDERR_FILENO);
 		E_MESSAGE(451, cli.fd);
-    }
-    if (ret == ERROR)
-        E_MESSAGE(425, cli.fd)
+	}
+	if (ret == ERROR)
+	{
+		E_MESSAGE(425, cli.fd);
+	}
 	else
 	{
 		close(pid[1]);
 		transfer_crlf(pid[0], env.dtp_fd, "\n", "\r\n");
 		wait(NULL);
-    	S_MESSAGE(226, cli.fd)
+		S_MESSAGE(226, cli.fd);
 	}
 }
 
-t_cli        handle_ls(t_env UNUSED(env), t_cli cli, char *str)
+t_cli				handle_ls(t_env env, t_cli cli, char *str)
 {
-    char            **args;
-    char            path[PATH_MAX];
+	char		**args;
+	char		path[PATH_MAX];
 
+	(void)env;
 	ft_bzero(path, PATH_MAX);
 	if (cli.isconnected == TRUE)
 	{
 		args = ft_strsplit2(str, ' ');
-    	if (args[1] != NULL)
-    	{
-    	    if (parse_args(&args[1]) != 0)
-    	    {
-    	        E_MESSAGE(501, cli.fd);
-    	        return (cli);
-    	    }
-    	}
-        S_MESSAGE(150, cli.fd)
+		if (args[1] != NULL)
+		{
+			if (parse_args(&args[1]) != 0)
+			{
+				E_MESSAGE(501, cli.fd);
+				return (cli);
+			}
+		}
+		S_MESSAGE(150, cli.fd);
 		cli.env = server_accept_dtp(cli.env);
-    	fork_ls(cli, cli.env, args);
+		fork_ls(cli, cli.env, args);
 		free(args);
 	}
-	else 
+	else
 		E_MESSAGE(530, cli.fd);
 	cli.env = server_close_dtp(cli.env);
-    return (cli);
+	return (cli);
 }

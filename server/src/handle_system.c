@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   handle_system.c                                    :+:      :+:    :+:   */
+/*   handle_sys.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -14,9 +14,10 @@
 #include "message.h"
 #include "config.h"
 
-t_cli       handle_syst(t_env UNUSED(env), t_cli cli, char *param)
+t_cli		handle_syst(t_env env, t_cli cli, char *param)
 {
-    (void)param;
-    S_MESSAGE(215, cli.fd);
-    return (cli);
+	(void)param;
+	(void)env;
+	S_MESSAGE(215, cli.fd);
+	return (cli);
 }

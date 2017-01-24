@@ -21,39 +21,41 @@
 #include "message.h"
 #include "tool.h"
 
-static int         test_dir(t_cli cli, char *dir)
+static int		test_dir(t_cli cli, char *dir)
 {
-    dprintf(1, "Lecture du dir et du cli.home : %s %s\n", dir, cli.home);
-    if (access(dir, F_OK) != 0)
+	if (access(dir, F_OK) != 0)
 	{
-        E_MESSAGE(501, cli.fd)
+		E_MESSAGE(501, cli.fd);
 		return (ERROR);
 	}
-    else if (access(dir, 0 | F_OK | R_OK) != 0 || lvl_dir(dir) < lvl_dir(cli.home))
+	else if (access(dir, 0 | F_OK | R_OK) != 0 ||
+			lvl_dir(dir) < lvl_dir(cli.home))
 	{
-        E_MESSAGE(501, cli.fd)
-        return (ERROR);
+		E_MESSAGE(501, cli.fd);
+		return (ERROR);
 	}
-    return (0);
+	return (0);
 }
 
-t_cli         handle_cd(t_env UNUSED(env), t_cli cli, char *param)
+t_cli			handle_cd(t_env env, t_cli cli, char *param)
 {
-    char        **args;
-    char        olddir[PATH_MAX];
-    char        dir[PATH_MAX];
+	char		**args;
+	char		olddir[PATH_MAX];
+	char		dir[PATH_MAX];
 
-    dir[0] = '\0';
-    args = ft_strsplit2(param, ' ');
-    getcwd(olddir, PATH_MAX);
+	(void)env;
+	dir[0] = '\0';
+	args = ft_strsplit2(param, ' ');
+	getcwd(olddir, PATH_MAX);
 	snprintf(dir, PATH_MAX, "%s/%s/", olddir, args[1]);
-	dprintf (1, "On cd sur %s\n", dir);
-    chdir(dir);
+	chdir(dir);
 	getcwd(dir, PATH_MAX);
-	dprintf (1, "On cd sur %s\n", dir);
+	dprintf(1, "On cd sur %s\n", dir);
 	if (test_dir(cli, dir) != ERROR)
-		S_MESSAGE(250, cli.fd)
+	{
+		S_MESSAGE(250, cli.fd);
+	}
 	else
 		chdir(olddir);
-    return (cli);
+	return (cli);
 }

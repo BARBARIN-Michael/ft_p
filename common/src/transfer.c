@@ -46,10 +46,9 @@ void				transfer_crlf(int fd, int cli, char *oldcrlf, char *newcrlf)
 	{
 		eof[0] = '\0';
 		dprintf(cli, "%s%s", wr, newcrlf);
-		wr = &eof[1];
+		wr = &eof[ft_strlen(oldcrlf)];
 	}
 	if (wr[0] != '\0')
 		dprintf(cli, "%s%s", wr, newcrlf);
 	transfer_crlf(fd, cli, oldcrlf, newcrlf);
 }
-

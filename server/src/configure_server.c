@@ -16,40 +16,40 @@
 #include "config.h"
 #include "options.h"
 
-t_options       parse_short_options(char opt, const char **data, t_options option)
+t_options		parse_short_options(char opt, const char **data, t_options opti)
 {
-    static char             options[] = {'b', 'p', '\0'};
-    static unsigned char    id_options[] = {OPT_B, OPT_P, OPT_NULL};
-    int                     i;
+	static char				options[] = {'b', 'p', '\0'};
+	static unsigned char	id_options[] = {OPT_B, OPT_P, OPT_NULL};
+	int						i;
 
-    i = -1;
-    while (options[++i] != '\0')
-    {
-        if (options[i] == opt)
-        {
-            option.opts |= id_options[i];
-            option.parameters[id_options[i]] = (char *)*data;
-            return option;
-        }
-    }
-    dprintf(STDERR_FILENO, "Cannot find options %c. ", opt);
-    printf("%s", MESS_USAGE);
-    exit (INVALIDE_OPTION);
-    return (option);
+	i = -1;
+	while (options[++i] != '\0')
+	{
+		if (options[i] == opt)
+		{
+			opti.opts |= id_options[i];
+			opti.parameters[id_options[i]] = (char *)*data;
+			return (opti);
+		}
+	}
+	dprintf(STDERR_FILENO, "Cannot find options %c. ", opt);
+	printf("%s", MESS_USAGE);
+	exit(INVALIDE_OPTION);
+	return (opti);
 }
 
-t_options    set_short_options(const char **data, int count)
+t_options		set_short_options(const char **data, int count)
 {
-    int                     a;
-    t_options               option;
+	int						a;
+	t_options				option;
 
-    option = (t_options){0};
-    a = 0;
-    while (a < count && data[a] != NULL)
-    {
-        if (data[a][0] == '-' && data[a][1] != '-')
-            option = parse_short_options(data[a][1], &data[a + 1], option);
-        ++a;
-    }
-    return (option);
+	ft_bzero(&option, sizeof(option));
+	a = 0;
+	while (a < count && data[a] != NULL)
+	{
+		if (data[a][0] == '-' && data[a][1] != '-')
+			option = parse_short_options(data[a][1], &data[a + 1], option);
+		++a;
+	}
+	return (option);
 }

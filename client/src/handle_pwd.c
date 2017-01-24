@@ -17,13 +17,14 @@
 #include "read.h"
 #include "client.h"
 
-t_cli            handle_pwd(t_cli cli, t_env UNUSED(env), char *cmd)
+t_cli			handle_pwd(t_cli cli, t_env env, char *cmd)
 {
 	char			buf[PATH_MAX];
 
+	(void)env;
 	buf[0] = '\0';
 	send_request("PWD", cmd, cli.sock.pi.fdin);
 	cli.sock.pi = ft_stream_get_protocol(cli.sock.pi, buf, PATH_MAX, PROT);
-	is_success ((protocol(buf)));
+	is_success((protocol(buf)));
 	return (cli);
 }

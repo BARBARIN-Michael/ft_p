@@ -16,7 +16,7 @@
 #include "config.h"
 #include "read.h"
 
-t_cli            handle_cd(t_cli cli, char *cmd)
+t_cli			handle_cd(t_cli cli, char *cmd)
 {
 	char			buf[PATH_MAX];
 	int				err;

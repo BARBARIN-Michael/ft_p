@@ -22,15 +22,16 @@
 # define PATH_MAX 4096
 
 # if __WIN32__
-    # define SYSTEM "WIN32"
-	# define CRLF "\r\n"
+#  define SYSTEM "WIN32"
+#  define CRLF "\r\n"
 # elif __linux__
-    # define SYSTEM "LINUX"
-	# define CRLF "\n"
+#  define SYSTEM "LINUX"
+#  define CRLF "\n"
 # else
-    # define SYSTEM "OSX"
-	# define CRLF "\n"
+#  define SYSTEM "OSX"
+#  define CRLF "\n"
 # endif
+
 # define ASCII 'A'
 # define BINARY 'I'
 
@@ -45,9 +46,9 @@
 # define PROT				"\r\n"
 
 typedef struct s_env		t_env;
-typedef struct s_cli    	t_cli;
+typedef struct s_cli		t_cli;
 typedef struct s_sock		t_sock;
-typedef union s_sockaddr	t_sockaddr;
+typedef union u_sockaddr	t_sockaddr;
 
 struct					s_sock
 {
@@ -57,35 +58,36 @@ struct					s_sock
 
 struct					s_cli
 {
-    char                *addr;
-    unsigned short      port;
-    char                *dtp_addr;
-    unsigned short      dtp_port;
+	char				*addr;
+	unsigned short		port;
+	char				*dtp_addr;
+	unsigned short		dtp_port;
 	t_cli				(*fct_connect)(t_cli cli, t_env env, char *cmd);
-    char                path[PATH_MAX];
+	char				path[PATH_MAX];
 	t_sock				sock;
 	int					istransferable;
 	int					type_transfer;
+	char				**env;
 };
 
-union					s_sockaddr
+union					u_sockaddr
 {
 	struct sockaddr			sa;
-	struct sockaddr_in  	sa4;
-	struct sockaddr_in6 	sa6;
-	struct sockaddr_storage ss;
+	struct sockaddr_in		sa4;
+	struct sockaddr_in6		sa6;
+	struct sockaddr_storage	ss;
 };
 
-struct                  s_env
+struct					s_env
 {
-    int                 cli_fd;
-    int                 srv_fd;
-    unsigned int        isrun;
+	int					cli_fd;
+	int					srv_fd;
+	unsigned int		isrun;
 };
 
-int             server_isOK(t_cli cli);
-t_env           init_client(t_cli cli, t_env env);
-void            client(t_cli cli);
-void            run(t_cli cli, t_env env);
+int						server_isok(t_cli cli);
+t_env					init_client(t_cli cli, t_env env);
+void					client(t_cli cli);
+void					run(t_cli cli, t_env env);
 
 #endif

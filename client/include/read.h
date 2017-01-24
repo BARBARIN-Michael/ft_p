@@ -14,7 +14,7 @@
 # define READ_H
 
 int			getheader(char *str);
-int         read_by_command(char *str);
+int			read_by_command(char *str);
 int			protocol(char *str);
 void		send_request(const char *cmd, char *args, int fd);
 void		is_success(int isok);

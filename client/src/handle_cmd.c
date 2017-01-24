@@ -14,29 +14,29 @@
 #include "tool.h"
 #include "handle.h"
 
-static unsigned long       getcommand(char *str)
+static unsigned long		getcommand(char *str)
 {
-    unsigned int    i;
-    char            command[20];
+	unsigned int	i;
+	char			command[20];
 
-    i = 0;
-    while (str[i] != ' ' && str[i] != '\0' && str[i] != '\r' && str[i] != '\n')
-    {
-        command[i] = ft_toupper(str[i]);
-        ++i;
-    }
-    command[i] = '\0';
-    return (djb2(command, i));
+	i = 0;
+	while (str[i] != ' ' && str[i] != '\0' && str[i] != '\r' && str[i] != '\n')
+	{
+		command[i] = ft_toupper(str[i]);
+		++i;
+	}
+	command[i] = '\0';
+	return (djb2(command, i));
 }
 
-t_cli                       handle_cmd(t_cli cli, t_env env, char *cmd)
+t_cli						handle_cmd(t_cli cli, t_env env, char *cmd)
 {
-    unsigned long   hash;
+	unsigned long	hash;
 
-    hash = getcommand(cmd);
-    if (hash == djb2("GET", 3) || hash == djb2("PUT", 3))
-        handle_transfer(cli, env, cmd);
-    else
-        cli = handle_control(cli, env, cmd);
-    return (cli);
+	hash = getcommand(cmd);
+	if (hash == djb2("GET", 3) || hash == djb2("PUT", 3))
+		handle_transfer(cli, env, cmd);
+	else
+		cli = handle_control(cli, env, cmd);
+	return (cli);
 }

@@ -10,8 +10,12 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#define INVALIDE_OPTION -1
-#define OPT_NULL    0x00
-#define OPT_B       0x01
-#define OPT_P       0x02
+#ifndef OPTIONS_H
+# define OPTIONS_H
 
+# define INVALIDE_OPTION 	-1
+# define OPT_NULL    		0x00
+# define OPT_B       		0x01
+# define OPT_P       		0x02
+
+#endif

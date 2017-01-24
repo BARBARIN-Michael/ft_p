@@ -26,11 +26,11 @@
 #include "tool.h"
 #include "server.h"
 
-
-t_cli		handle_type(t_env UNUSED(env), t_cli cli, char *str)
+t_cli		handle_type(t_env env, t_cli cli, char *str)
 {
 	char	**args;
 
+	(void)env;
 	args = ft_strsplit2(str, ' ');
 	if (ft_toupper(args[1][0]) == 'A' || ft_toupper(args[1][0] == 'I'))
 	{
@@ -38,36 +38,40 @@ t_cli		handle_type(t_env UNUSED(env), t_cli cli, char *str)
 		S_MESSAGE(200, cli.fd);
 	}
 	else
-		E_MESSAGE(504, cli.fd)
+		E_MESSAGE(504, cli.fd);
 	free(args);
 	return (cli);
 }
 
-t_cli		handle_port(t_env UNUSED(env), t_cli cli, char *UNUSED(str))
+t_cli		handle_port(t_env env, t_cli cli, char *str)
 {
-	E_MESSAGE(500, cli.fd)
+	(void)env;
+	(void)str;
+	E_MESSAGE(500, cli.fd);
 	return (cli);
 }
 
-t_cli		handle_pasv(t_env UNUSED(env), t_cli cli, char *UNUSED(str))
+t_cli		handle_pasv(t_env env, t_cli cli, char *str)
 {
 	struct sockaddr_in6	sin;
-	socklen_t			addrLength;
-	char				str[16];
+	socklen_t			len;
+	char				ip[16];
 	unsigned short		port;
 
+	(void)env;
+	(void)str;
 	port = 0;
 	if (cli.istransferable)
 		close(cli.env.data_fd);
 	cli.env.data_fd = init_sock(cli.env);
 	cli.env = bind_sock(cli.env, &cli.env.data_fd, &port);
-	addrLength = sizeof(sin);
-	getsockname(cli.fd, (struct sockaddr*)&sin, &addrLength);
+	len = sizeof(sin);
+	getsockname(cli.fd, (struct sockaddr*)&sin, &len);
 	if (IN6_IS_ADDR_V4MAPPED(&sin.sin6_addr))
 	{
-		ft_memcpy(str, sin.sin6_addr.s6_addr + 12, 4);
-		S_MESSAGE(227, cli.fd, (int)str[0], (int)str[1], (int)str[2],
-			(int)str[3], (port >> 8) & 0xFF, port & 0xFF);
+		ft_memcpy(ip, sin.sin6_addr.s6_addr + 12, 4);
+		S_MESSAGE(227, cli.fd, (int)ip[0], (int)ip[1], (int)ip[2],
+				(int)ip[3], (port >> 8) & 0xFF, port & 0xFF);
 		cli.istransferable = TRUE;
 	}
 	else
@@ -75,20 +79,21 @@ t_cli		handle_pasv(t_env UNUSED(env), t_cli cli, char *UNUSED(str))
 	return (cli);
 }
 
-t_cli		handle_epsv(t_env UNUSED(env), t_cli cli, char *UNUSED(str))
+t_cli		handle_epsv(t_env env, t_cli cli, char *str)
 {
-	struct sockaddr_in6	localAddr;
-	socklen_t			addrLength;
+	struct sockaddr_in6	sin;
+	socklen_t			len;
 	unsigned short		port;
 
+	(void)env;
+	(void)str;
 	port = 0;
 	if (cli.istransferable)
 		close(cli.env.data_fd);
 	cli.env.data_fd = init_sock(cli.env);
 	cli.env = bind_sock(cli.env, &cli.env.data_fd, &port);
-	addrLength = sizeof(localAddr);
-	getsockname(cli.fd, (struct sockaddr*)&localAddr,
-			&addrLength);
+	len = sizeof(sin);
+	getsockname(cli.fd, (struct sockaddr*)&sin, &len);
 	S_MESSAGE(229, cli.fd, port);
 	cli.istransferable = TRUE;
 	return (cli);

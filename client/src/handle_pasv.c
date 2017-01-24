@@ -17,17 +17,18 @@
 #include "read.h"
 #include "client.h"
 
-t_cli            handle_pasv(t_cli cli, t_env UNUSED(env), char *cmd)
+t_cli			handle_pasv(t_cli cli, t_env env, char *cmd)
 {
 	char			buf[PATH_MAX];
 	char			*str;
 	char			**args;
 	char			addr[PATH_MAX];
 
+	(void)env;
 	buf[0] = '\0';
 	send_request("PASV", cmd, cli.sock.pi.fdin);
 	cli.sock.pi = ft_stream_get_protocol(cli.sock.pi, buf, PATH_MAX, PROT);
-	is_success ((protocol(buf)));
+	is_success((protocol(buf)));
 	if (getheader(buf) != 227)
 		return (cli);
 	str = &ft_strchr(buf, '(')[1];
@@ -40,15 +41,16 @@ t_cli            handle_pasv(t_cli cli, t_env UNUSED(env), char *cmd)
 	return (cli);
 }
 
-t_cli            handle_epsv(t_cli cli, t_env UNUSED(env), char *cmd)
+t_cli			handle_epsv(t_cli cli, t_env env, char *cmd)
 {
 	char			buf[PATH_MAX];
 	char			*str;
 
+	(void)env;
 	buf[0] = '\0';
 	send_request("EPSV", cmd, cli.sock.pi.fdin);
 	cli.sock.pi = ft_stream_get_protocol(cli.sock.pi, buf, PATH_MAX, PROT);
-	is_success ((protocol(buf)));
+	is_success((protocol(buf)));
 	if (getheader(buf) != 229)
 		return (cli);
 	str = &ft_strchr(buf, '(')[4];
