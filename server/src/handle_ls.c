@@ -6,7 +6,7 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/20 18:51:13 by barbare           #+#    #+#             */
-/*   Updated: 2017/01/23 16:22:38 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/24 14:53:24 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,39 +64,29 @@ void                fork_ls(t_cli cli, t_env env, char **args)
 		wait(NULL);
     	S_MESSAGE(226, cli.fd)
 	}
-	free(args);
 }
 
 t_cli        handle_ls(t_env UNUSED(env), t_cli cli, char *str)
 {
-    int             nbargs;
     char            **args;
     char            path[PATH_MAX];
 
 	ft_bzero(path, PATH_MAX);
 	if (cli.isconnected == TRUE)
 	{
-		args = ft_nstrsplit2(str, ' ', ((nbargs = count_args(str, ' ')) + 2));
-		args[0] = ft_strdup("/bin/ls");
-    	if (nbargs >= 1)
+		args = ft_strsplit2(str, ' ');
+    	if (args[1] != NULL)
     	{
     	    if (parse_args(&args[1]) != 0)
     	    {
-    	        free(args);
     	        E_MESSAGE(501, cli.fd);
     	        return (cli);
     	    }
     	}
-    	else
-    	{
-    	    getcwd(path, PATH_MAX);
-    	    args[nbargs + 1] = path;
-			args[nbargs + 2] = NULL;
-    	}
         S_MESSAGE(150, cli.fd)
 		cli.env = server_accept_dtp(cli.env);
     	fork_ls(cli, cli.env, args);
-		free(args[0]);
+		free(args);
 	}
 	else 
 		E_MESSAGE(530, cli.fd);

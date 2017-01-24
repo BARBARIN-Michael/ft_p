@@ -6,7 +6,7 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/20 17:52:18 by barbare           #+#    #+#             */
-/*   Updated: 2017/01/23 18:50:03 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/24 13:50:22 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,14 +18,14 @@
 
 int				is_functionnal_fct(int fd, t_cli cli, int id)
 {
-	if (id < 9)
+	if (id < 3)
 		return (TRUE);
 	else if (!cli.isconnected)
 	{
 		E_MESSAGE(530, fd);
 		return (FALSE);
 	}
-	else if (!cli.istransferable)
+	else if (id >= 9 && !cli.istransferable)
 	{
 		E_MESSAGE(425, fd);
 		return (FALSE);

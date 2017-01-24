@@ -6,7 +6,7 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/29 12:01:54 by barbare           #+#    #+#             */
-/*   Updated: 2017/01/23 20:53:05 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/24 13:34:24 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,9 @@
 #include "config.h"
 #include "read.h"
 
-t_cli					handle_help(t_cli cli, t_env env, char *cmd)
+t_cli					handle_help(t_cli cli, t_env UNUSED(env),
+									char *UNUSED(cmd))
 {
-	(void)cli;
-	(void)env;
-	(void)cmd;
 	dprintf(1, "\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
 			"ls", "cd", "pwd",
 			"quit",	"user", "pass", "pasv", "epsv", "lls", 

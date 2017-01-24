@@ -6,7 +6,7 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/23 17:58:59 by barbare           #+#    #+#             */
-/*   Updated: 2017/01/23 20:35:19 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/24 14:55:22 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,10 +80,12 @@ t_cli           handle_pass(t_env UNUSED(env), t_cli cli, char *param)
 		if (stat(cli.home, &s) == -1)
 			mkdir(cli.home, 0700);
 		chdir(cli.home);
+		free(params);
 		return (cli);
 	}
     else
         S_MESSAGE(530, cli.fd)
+	free(params);
 	reset_user(cli);
     return (cli);
 }

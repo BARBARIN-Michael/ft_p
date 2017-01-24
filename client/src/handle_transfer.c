@@ -6,7 +6,7 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/06 18:54:33 by barbare           #+#    #+#             */
-/*   Updated: 2017/01/23 16:12:44 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/24 13:45:36 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@ static void		handle_get(t_env env, t_cli cli, char *cmd)
 	char 	buf[PATH_MAX];
 	int		id;
 
+	if(!((cli = cli.fct_connect(cli, env, NULL)).istransferable))
+		return ;
 	send_request("RETR", cmd, cli.sock.pi.fdin);
 	cli.sock.pi = ft_stream_get_protocol(cli.sock.pi, buf, PATH_MAX, PROT);
 	id = getheader(buf);
@@ -35,21 +37,13 @@ static void		handle_get(t_env env, t_cli cli, char *cmd)
 		cli.sock.dtp = set_dtp_receive_file(cli, env, cmd);
 		if (fork() == 0)
 		{
-			if (cli.type_transfer == ASCII)
-			{
-				dprintf(1, "transfer ascii\n");
-				transfer_crlf(cli.sock.dtp.fdin, cli.sock.dtp.fdout, PROT, CRLF);
-			}
-			else if (cli.type_transfer== BINARY)
-			{
-				dprintf(1, "transfer bin\n");
+			(cli.type_transfer == ASCII) ? transfer_crlf(cli.sock.dtp.fdin,
+					cli.sock.dtp.fdout, PROT, CRLF) :
 				transfer_binary(cli.sock.dtp.fdin, cli.sock.dtp.fdout);
-			}
 			exit(0);
 		}
 		wait(NULL);
 		cli.sock.pi = ft_stream_get_protocol(cli.sock.pi, buf, PATH_MAX, PROT);
-		dprintf(1, "\nTest : %s\n", buf);
 		is_success(protocol(buf));
 		cli.sock.dtp = close_dtp_file(cli);
 	}

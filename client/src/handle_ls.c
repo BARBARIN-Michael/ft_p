@@ -6,7 +6,7 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/29 13:40:02 by barbare           #+#    #+#             */
-/*   Updated: 2017/01/23 14:22:56 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/24 13:51:15 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@ t_cli            handle_ls(t_cli cli, t_env env, char *cmd)
 	int				id;
 
 	buf[0] = '\0';
+	if (!(cli = cli.fct_connect(cli, env, NULL)).istransferable)
+		return cli;
 	send_request("LIST", cmd, cli.sock.pi.fdin);
 	cli.sock.pi = ft_stream_get_protocol(cli.sock.pi, buf, PATH_MAX, PROT);
 	id = getheader(buf);

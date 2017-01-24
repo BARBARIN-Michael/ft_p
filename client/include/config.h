@@ -6,7 +6,7 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/28 15:50:33 by barbare           #+#    #+#             */
-/*   Updated: 2017/01/23 20:27:48 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/24 13:27:18 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,9 +44,10 @@
 
 # define PROT				"\r\n"
 
-typedef struct s_env    t_env;
-typedef struct s_cli    t_cli;
-typedef struct s_sock	t_sock;
+typedef struct s_env		t_env;
+typedef struct s_cli    	t_cli;
+typedef struct s_sock		t_sock;
+typedef union s_sockaddr	t_sockaddr;
 
 struct					s_sock
 {
@@ -60,10 +61,19 @@ struct					s_cli
     unsigned short      port;
     char                *dtp_addr;
     unsigned short      dtp_port;
+	t_cli				(*fct_connect)(t_cli cli, t_env env, char *cmd);
     char                path[PATH_MAX];
 	t_sock				sock;
 	int					istransferable;
 	int					type_transfer;
+};
+
+union					s_sockaddr
+{
+	struct sockaddr			sa;
+	struct sockaddr_in  	sa4;
+	struct sockaddr_in6 	sa6;
+	struct sockaddr_storage ss;
 };
 
 struct                  s_env
@@ -71,14 +81,10 @@ struct                  s_env
     int                 cli_fd;
     int                 srv_fd;
     unsigned int        isrun;
-    struct sockaddr_in6  cli_addr;
-    struct hostent      *host;
-    struct protoent     *proto;
 };
 
 int             server_isOK(t_cli cli);
 t_env           init_client(t_cli cli, t_env env);
-t_env           init_socket(t_cli cli, t_env env);
 void            client(t_cli cli);
 void            run(t_cli cli, t_env env);
 

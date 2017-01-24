@@ -6,7 +6,7 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/05 20:14:05 by barbare           #+#    #+#             */
-/*   Updated: 2017/01/20 13:39:30 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/24 13:20:20 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,6 @@ t_cli       handle_pwd(t_env UNUSED(env), t_cli cli, char *param)
     (void)param;
     buf[0] = '\0';
     getcwd(buf, PATH_MAX);
-	dprintf(1, "Test : %s, %s\n", cli.home, buf);
 	S_MESSAGE(257, cli.fd, transform_home(cli.home, buf));
     return (cli);
 }

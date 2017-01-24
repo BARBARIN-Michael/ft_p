@@ -6,13 +6,14 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/28 14:53:44 by barbare           #+#    #+#             */
-/*   Updated: 2017/01/23 20:47:16 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/24 14:33:20 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 #include <stdio.h>
 #include <signal.h>
+#include <arpa/inet.h>
 #include "libft.h"
 #include "ft_stream.h"
 #include "error.h"
@@ -20,6 +21,52 @@
 #include "handle.h"
 #include "config.h"
 #include "client.h"
+
+int           init_socket(char *addr)
+{
+    int				fd;
+	struct protoent *proto;
+	struct hostent	*host;
+
+
+    if ((proto = getprotobyname("tcp")) == NULL)
+    	SOCKET_ERRNO("Error tcp %s!", addr);
+	if (!(host = gethostbyname2(addr, AF_INET))
+			&& !(host = gethostbyname2(addr, AF_INET6)))
+    	SOCKET_ERRNO("Host %s not found init_sock !", addr);
+	if (!(fd = socket(host->h_addrtype, SOCK_STREAM, proto->p_proto)))
+    	SOCKET_ERRNO("Connect error socket %s!", addr);
+	return (fd);
+}
+
+int		connect_socket(char *addr, int port, int fd)
+{
+	t_sockaddr					sin;
+	struct hostent				*host;
+	int							len;
+
+	if (!(host = gethostbyname2(addr, AF_INET))
+			&& !(host = gethostbyname2(addr, AF_INET6)))
+    	SOCKET_ERRNO("Host %s not found connect_sock !", addr);
+	ft_bzero(&sin, sizeof(sin));
+	if (host->h_addrtype == AF_INET6)
+	{
+		sin.sa6.sin6_family = host->h_addrtype;
+		inet_pton(AF_INET6, addr, &(sin.sa6.sin6_addr));
+		sin.sa6.sin6_port = htons(port);
+		len = sizeof(sin.sa6);
+	}
+	else
+	{
+		sin.sa4.sin_family = host->h_addrtype;
+		inet_pton(AF_INET, addr, &(sin.sa4.sin_addr));
+		sin.sa4.sin_port = htons(port);
+		len = sizeof(sin.sa4);
+	}
+    if (connect(fd, (struct sockaddr *)&sin.sa, len) == -1)
+    	SOCKET_ERRNO("Error connect %s!", addr);
+	return (fd);
+}
 
 int            server_isOK(t_cli cli)
 {
@@ -36,53 +83,27 @@ int            server_isOK(t_cli cli)
     return (TRUE);
 }
 
-t_env           init_client(t_cli cli, t_env env)
-{
-	socklen_t			addrLength;
-
-    ft_bzero(&env.cli_addr, sizeof(env.cli_addr));
-    env.cli_addr.sin6_family = AF_INET6;
-    env.cli_addr.sin6_port = htons(cli.port);
-    env.cli_addr.sin6_addr = in6addr_any;
-	addrLength = sizeof(env.cli_addr);
-    STATUS("Connecting to %s\n", cli.addr);
-    if (connect(cli.sock.pi.fdin, (struct sockaddr *)&env.cli_addr, addrLength) == ERROR)
-    	SOCKET_ERRNO("Connect error %s!", cli.addr);
-    return (env);
-}
-
-t_env           init_socket(t_cli cli, t_env env)
-{
-    int     fd;
-
-    if ((env.proto = getprotobyname("tcp")) == NULL ||
-            !(fd = socket(PF_INET6, SOCK_STREAM, env.proto->p_proto)))
-    {
-        FAILED("Cannot open soint !");
-        exit (SOCKET_ERROR);
-    }
-	STATUS("Resolving address of %s\n", cli.addr);
-	if (((env.host = gethostbyname2(cli.addr, AF_INET)) == NULL) &&
-			((env.host = gethostbyname2(cli.addr, AF_INET6)) == NULL))
-	{
-		FAILED("Host %s not found !", cli.addr);
-		exit (SOCKET_ERROR);
-	}
-	env.cli_fd = fd;
-    return (env);
-}
-
 void            client(t_cli cli)
 {
-    t_env       env;
+    t_env				env;
+	struct hostent		*host;
 
-    env = init_socket(cli, env);
+	if (!(host = gethostbyname2(cli.addr, AF_INET))
+			&& !(host = gethostbyname2(cli.addr, AF_INET6)))
+    	SOCKET_ERRNO("Host %s not found client!", cli.addr);
+    env.cli_fd = init_socket(cli.addr);
+	STATUS("Resolving address of %s\n", cli.addr);
+    env.cli_fd = connect_socket(cli.addr, cli.port, env.cli_fd);
+    STATUS("Connecting to %s\n", cli.addr);
 	cli.type_transfer = ASCII;
     cli.sock.pi = ft_stream_new(env.cli_fd, STDOUT_FILENO, STDERR_FILENO);
-    env = init_client(cli, env);
     server_isOK(cli);
 	cli.istransferable = FALSE;
     getcwd(cli.path, PATH_MAX);
+	if (host->h_addrtype == AF_INET)
+		cli.fct_connect = &handle_pasv;
+	else
+		cli.fct_connect = &handle_epsv;
     run(cli, env);
 	if (cli.istransferable)
 		free(cli.dtp_addr);

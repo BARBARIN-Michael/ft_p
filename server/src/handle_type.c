@@ -6,7 +6,7 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/20 13:48:12 by barbare           #+#    #+#             */
-/*   Updated: 2017/01/23 20:50:37 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/24 10:08:20 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,6 @@ t_cli		handle_pasv(t_env UNUSED(env), t_cli cli, char *UNUSED(str))
 	struct sockaddr_in6	sin;
 	socklen_t			addrLength;
 	unsigned short		port;
-	char				inet[12];
 
 	port = 0;
 	if (cli.istransferable)
@@ -63,10 +62,7 @@ t_cli		handle_pasv(t_env UNUSED(env), t_cli cli, char *UNUSED(str))
 	cli.env = bind_sock(cli.env, &cli.env.data_fd, &port);
 	addrLength = sizeof(sin);
 	getsockname(cli.fd, (struct sockaddr*)&sin, &addrLength);
-	ft_bzero(inet, 12);
-	inet[10] = 0xFF;
-	inet[11] = 0xFF;
-	if (ft_memcmp(inet, sin.sin6_addr.s6_addr, 12) == 0)
+	if (IN6_IS_ADDR_V4MAPPED(sin.sin6_addr.s6_addr))
 	{
 		S_MESSAGE(227, cli.fd, sin.sin6_addr.s6_addr[12],
 			sin.sin6_addr.s6_addr[13], sin.sin6_addr.s6_addr[14],
