@@ -13,8 +13,8 @@
 CC ?= gcc
 CX ?= clang++
 CFLAGS += -g -Wall -Wextra -Werror
-INC = -I./include -I ../common/include -I../common/libs/libft/include 
-LIBS = -L../common/libs/libft/ -lft
+INC = -I./include -I ../common/include -I../common/libft/libft/include 
+LIBS = -L../common/libft/libft/ -lft
 
 SRV_SRCS =  src/handle_cmd.c \
             src/handle_system.c \
@@ -56,7 +56,7 @@ obj/%.o: src/%.c $(SRC_INCLUDE)
 
 ../common/obj/%.o: ../common/src/%.c $(SRC_INCLUDE)
 	$(MKDIR) -p $(dir $@)
-	$(CC) -c $(CFLAGS) $< -o $@ -I../common/include -I../common/libs/libft/include
+	$(CC) -c $(CFLAGS) $< -o $@ -I../common/include -I../common/libft/libft/include
 
 clean:
 	$(RM) $(SRV_OBJS)

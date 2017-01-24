@@ -13,8 +13,8 @@
 CC ?= gcc
 CX ?= clang++
 CFLAGS += -g -Wall -Wextra -Werror
-INC = -I./include -I ../common/include -I../common/libs/libft/include -I../common/libs/libftstream/include
-LIBS = -L../common/libs/libft/ -L../common/libs/libftstream/ -lft -lftstream
+INC = -I./include -I ../common/include -I../common/libft/libft/include -I../common/libft/libftstream/include
+LIBS = -L../common/libft/libft/ -L../common/libft/libftstream/ -lft -lftstream
 
 CLI_SRCS = 	src/client.c \
     		src/handle_cmd.c \
@@ -57,7 +57,7 @@ obj/%.o: src/%.c $(SRC_INCLUDE)
 
 ../common/obj/%.o: ../common/src/%.c $(SRC_INCLUDE)
 	$(MKDIR) -p $(dir $@)
-	$(CC) -c $(CFLAGS) $< -o $@ -I../common/include -I../common/libs/libft/include
+	$(CC) -c $(CFLAGS) $< -o $@ -I../common/include -I../common/libft/libft/include
 
 clean:
 	$(RM) $(CLI_OBJS)

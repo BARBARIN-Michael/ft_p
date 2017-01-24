@@ -17,8 +17,8 @@ CX ?= clang++
 all: ftp
 
 ftp:
-	make -C ./common/libs/libft/
-	make -C ./common/libs/libftstream/
+	make -C ./common/libft/libft/
+	make -C ./common/libft/libftstream/
 	make -C ./client/
 	make -C ./server/
 
