@@ -6,7 +6,7 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/17 11:29:54 by barbare           #+#    #+#             */
-/*   Updated: 2017/01/23 14:51:12 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/25 12:15:00 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,10 +49,8 @@ t_stream		ft_stream_fill(t_stream stream)
 
 t_stream		ft_stream_cr(t_stream stream)
 {
-	char	buf[BUFFSTREAM];
-
 	ft_strcpy(stream.buf, &stream.buf[stream.cursor]);
-	stream.size = ft_strlen(buf);
+	stream.size = ft_strlen(stream.buf);
 	stream.cursor = 0;
 	return (stream);
 }
