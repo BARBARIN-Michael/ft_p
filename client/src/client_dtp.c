@@ -6,7 +6,7 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/20 09:40:52 by barbare           #+#    #+#             */
-/*   Updated: 2017/01/24 16:12:12 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/25 14:25:28 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ t_stream		set_dtp_receive_file(t_cli cli, t_env env, char *file)
 	int		fd;
 
 	(void)env;
-	cli.sock.dtp = ft_stream_set_fdin(cli.sock.dtp, sock_data(cli));
 	buf[0] = '\0';
 	getcwd(buf, PATH_MAX);
 	ft_strcat(buf, "/");
