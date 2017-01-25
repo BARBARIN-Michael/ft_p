@@ -58,7 +58,6 @@ t_stream		set_dtp_put_file(t_cli cli, t_env env, char *file)
 	int		fd;
 
 	(void)env;
-	cli.sock.dtp = ft_stream_set_fdin(cli.sock.dtp, sock_data(cli));
 	fd = open(file, O_RDONLY);
 	cli.sock.dtp = ft_stream_set_fdin(cli.sock.dtp, fd);
 	cli.sock.dtp = ft_stream_set_fdout(cli.sock.dtp, sock_data(cli));

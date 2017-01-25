@@ -19,9 +19,9 @@
 #include <fcntl.h>
 #include <stdio.h>
 
-#define ROOTACCOUNT "root"
-#define ROOTPATH "./root"
-#define ROOTPASS "root"
+#define ROOTACCOUNT "anonymous"
+#define ROOTPATH "./anonymous"
+#define ROOTPASS "anonymous"
 #define ROOTACCESS "rw"
 
 static int			usage(void)

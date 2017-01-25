@@ -36,12 +36,12 @@ static t_cli		set_user(t_cli cli, char **user)
 	snprintf(cli.user, PATH_MAX, "%s", user[0]);
 	snprintf(cli.pass, PATH_MAX, "%s", user[1]);
 	snprintf(cli.home, PATH_MAX, "%s/%s", args, user[2]);
+	dprintf(1, "HOME : %s\n", cli.home);
 	cli.access = 0x00;
 	cli.access |= user[3] && (user[3][0] == 'w' || user[3][1] == 'w') ? 0x01 :
 		0x00;
 	cli.access |= user[3] && (user[3][0] == 'r' || user[3][1] == 'r') ? 0x10 :
 		0x00;
-	dprintf(1, "Lecture de access : %02X\n", cli.access);
 	if (cli.pass[0] != '\0')
 	{
 		S_MESSAGE(331, cli.fd);
@@ -71,8 +71,6 @@ t_cli				get_user(t_cli cli, char **users, char *param)
 	while (cli.isconnected == FALSE && users[++i] != NULL)
 	{
 		user = ft_strsplit2(users[i], ':');
-		if (user[0] == '\0')
-			break ;
 		if (ft_strncmp(user[0], params[1], ft_strlen(user[0])) == 0)
 		{
 			free(user);
