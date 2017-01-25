@@ -36,9 +36,7 @@ int				init_sock(t_env env)
 		SOCKET_ERRNO("Cannot open socket !");
 	}
 	else if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt, len) < 0)
-	{
 		SOCKET_ERRNO("setsockopt(SO_REUSEADDR) failed");
-	}
 	return (fd);
 }
 
@@ -89,10 +87,9 @@ void			run(t_env env)
 		{
 			dprintf(STDOUT_FILENO, "Client Connected : %d\n", cli.fd);
 			S_MESSAGE(220, cli.fd);
-			cli.path_server = env.config.path;
-			snprintf(cli.auth, PATH_MAX, "%s/%s",
-					env.config.path, env.config.authorized);
-			snprintf(cli.home, PATH_MAX, "/dir/anonymous");
+			snprintf(cli.auth, PATH_MAX, "%s/%s", env.config.path,
+					env.config.authorized);
+			snprintf(cli.home, PATH_MAX, "./dir");
 			cli.istransferable = FALSE;
 			cli.type_transfer = ASCII;
 			if (stat(cli.home, &s) == -1)

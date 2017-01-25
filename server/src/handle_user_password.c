@@ -23,16 +23,19 @@ static t_cli		reset_user(t_cli cli)
 {
 	cli.user[0] = '\0';
 	cli.pass[0] = '\0';
-	snprintf(cli.home, PATH_MAX, "%s/anonymous", cli.path_server);
+	snprintf(cli.home, PATH_MAX, "./anonymous");
 	cli.isconnected = FALSE;
 	return (cli);
 }
 
 static t_cli		set_user(t_cli cli, char **user)
 {
+	char		args[PATH_MAX];
+
+	getcwd(args, PATH_MAX);
 	snprintf(cli.user, PATH_MAX, "%s", user[0]);
 	snprintf(cli.pass, PATH_MAX, "%s", user[1]);
-	snprintf(cli.home, PATH_MAX, "%s%s", cli.path_server, user[2]);
+	snprintf(cli.home, PATH_MAX, "%s/%s", args, user[2]);
 	cli.access = 0x00;
 	cli.access |= user[3] && (user[3][0] == 'w' || user[3][1] == 'w') ? 0x01 :
 		0x00;
@@ -68,10 +71,16 @@ t_cli				get_user(t_cli cli, char **users, char *param)
 	while (cli.isconnected == FALSE && users[++i] != NULL)
 	{
 		user = ft_strsplit2(users[i], ':');
+		if (user[0] == '\0')
+			break ;
 		if (ft_strncmp(user[0], params[1], ft_strlen(user[0])) == 0)
-			cli = set_user(cli, user);
+		{
+			free(user);
+			return (set_user(cli, user));
+		}
 		free(user);
 	}
+	S_MESSAGE(501, cli.fd);
 	free(params);
 	return (cli);
 }
@@ -108,24 +117,26 @@ t_cli				handle_pass(t_env env, t_cli cli, char *param)
 t_cli				handle_user(t_env env, t_cli cli, char *param)
 {
 	char		users[PATH_MAX];
-	char		path[PATH_MAX];
 	char		**args;
 	int			ret;
 	int			fd;
 
 	(void)env;
-	path[0] = '\0';
-	snprintf(path, PATH_MAX, "%s/%s", cli.path_server, cli.auth);
-	if (access(cli.auth, F_OK) == ERROR)
+	if (access(cli.auth, 0 | F_OK) == ERROR)
+	{
 		dprintf(STDERR_FILENO, "not permission for file %s\n", cli.auth);
+		E_MESSAGE(451, cli.fd);
+	}
 	else
 	{
 		fd = open(cli.auth, O_RDONLY);
-		ret = read(fd, users, PATH_MAX);
-		users[ret] = '\0';
-		args = ft_strsplit2(users, '\n');
-		cli = get_user(cli, args, param);
-		free(args);
+		while ((ret = read(fd, users, PATH_MAX)) > 0)
+		{
+			users[ret] = '\0';
+			args = ft_strsplit2(users, '\n');
+			cli = get_user(cli, args, param);
+			free(args);
+		}
 		close(fd);
 	}
 	return (cli);

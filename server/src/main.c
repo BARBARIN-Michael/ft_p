@@ -17,11 +17,12 @@
 #include "error.h"
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <stdio.h>
 
 #define ROOTACCOUNT "root"
 #define ROOTPATH "./root"
 #define ROOTPASS "root"
-#define ROOTACCESS "RW"
+#define ROOTACCESS "rw"
 
 static int			usage(void)
 {
@@ -31,8 +32,11 @@ static int			usage(void)
 
 static t_serv		set_config(t_serv config, t_options options)
 {
-	int		file_auth;
+	int				file_auth;
+	struct stat		s;
 
+	if (stat("./dir", &s) == -1)
+		mkdir("./dir", 0700);
 	if ((options.opts & OPT_B) &&
 			ft_isdigit(options.parameters[OPT_B][0]))
 		config.backlog = ft_atoi(options.parameters[OPT_B]);
@@ -41,12 +45,12 @@ static t_serv		set_config(t_serv config, t_options options)
 	if ((options.opts & OPT_P))
 		config.authorized = options.parameters[OPT_P];
 	else
-		config.authorized = "/authorized";
+		config.authorized = "./authorized";
 	if (access(config.authorized, 0 | F_OK) != 0)
 	{
 		file_auth = open(config.authorized, O_WRONLY | O_CREAT, 0700);
-		dprintf(file_auth, "%s:%s:%s:%s:", ROOTACCOUNT, ROOTACCESS,
-				ROOTPASS, ROOTPATH);
+		dprintf(file_auth, "%s:%s:%s:%s:", ROOTACCOUNT,
+				ROOTPASS, ROOTPATH, ROOTACCESS);
 		close(file_auth);
 	}
 	return (config);

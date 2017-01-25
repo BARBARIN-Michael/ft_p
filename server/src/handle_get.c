@@ -60,10 +60,10 @@ t_cli			handle_get(t_env env, t_cli cli, char *param)
 	if (test_file(args[1], cli.fd) < 0)
 		return (cli);
 	S_MESSAGE(150, cli.fd);
-	cli.env = server_accept_dtp(cli.env);
-	fd = open(args[1], O_RDONLY);
-	if (fd != -1 && fork() == 0)
+	if (fork() == 0)
 	{
+		cli.env = server_accept_dtp(cli.env);
+		fd = open(args[1], O_RDONLY);
 		if (cli.type_transfer == BINARY)
 			transfer_binary(fd, cli.env.dtp_fd);
 		else if (cli.type_transfer == ASCII)
@@ -72,7 +72,6 @@ t_cli			handle_get(t_env env, t_cli cli, char *param)
 		exit(0);
 	}
 	dprintf(1, "close socket\n");
-	cli.env = server_close_dtp(cli.env);
 	wait(NULL);
 	return (cli);
 }
