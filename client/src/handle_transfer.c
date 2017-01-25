@@ -36,7 +36,7 @@ static void		handle_get(t_env env, t_cli cli, char *cmd)
 		if (fork() == 0)
 		{
 			(cli.type_transfer == ASCII) ? transfer_crlf(cli.sock.dtp.fdin,
-					cli.sock.dtp.fdout, PROT, "\n") :
+					cli.sock.dtp.fdout, PROT, CRLF) :
 				transfer_binary(cli.sock.dtp.fdin, cli.sock.dtp.fdout);
 			exit(0);
 		}

@@ -59,10 +59,11 @@ void		is_success(int isok)
 void		send_request(const char *cmd, char *args, int fd)
 {
 	char		buf[PATH_MAX];
+	char		*str;
 
 	buf[0] = '\0';
-	if (args)
-		args[ft_strlen(args) - 1] = '\0';
+	if ((str = ft_strchr(args, '\n')))
+		str[0] = '\0';
 	if (args == NULL)
 		snprintf(buf, PATH_MAX, "%s\r\n", cmd);
 	else

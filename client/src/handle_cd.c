@@ -16,11 +16,12 @@
 #include "config.h"
 #include "read.h"
 
-t_cli			handle_cd(t_cli cli, char *cmd)
+t_cli			handle_cd(t_cli cli, t_env env, char *cmd)
 {
 	char			buf[PATH_MAX];
 	int				err;
 
+	(void)env;
 	buf[0] = '\0';
 	send_request("CWD", cmd, cli.sock.pi.fdin);
 	ft_stream_get_protocol(cli.sock.pi, buf, PATH_MAX, PROT);
