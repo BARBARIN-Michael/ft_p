@@ -22,10 +22,8 @@ t_env		server_accept_dtp(t_env env)
 	socklen_t				len;
 
 	len = sizeof(env.cli_addr);
-	dprintf(STDOUT_FILENO, "Connecting data ...\n");
 	if (!(env.dtp_fd = accept(env.data_fd, (SOCKADDR*)&env.cli_addr, &len)))
 		dprintf(STDERR_FILENO, "Accept KO\n");
-	dprintf(STDOUT_FILENO, "Connected for data\n");
 	return (env);
 }
 

@@ -36,7 +36,6 @@ static t_cli		set_user(t_cli cli, char **user)
 	snprintf(cli.user, PATH_MAX, "%s", user[0]);
 	snprintf(cli.pass, PATH_MAX, "%s", user[1]);
 	snprintf(cli.home, PATH_MAX, "%s/%s", args, user[2]);
-	dprintf(1, "HOME : %s\n", cli.home);
 	cli.access = 0x00;
 	cli.access |= user[3] && (user[3][0] == 'w' || user[3][1] == 'w') ? 0x01 :
 		0x00;

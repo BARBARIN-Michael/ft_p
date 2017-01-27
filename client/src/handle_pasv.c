@@ -58,6 +58,5 @@ t_cli			handle_epsv(t_cli cli, t_env env, char *cmd)
 	cli.dtp_addr = cli.addr;
 	cli.dtp_port = ft_atoi(str);
 	cli.istransferable = TRUE;
-	dprintf(1, "Connexion data in port %d\n", cli.dtp_port);
 	return (cli);
 }
