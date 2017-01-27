@@ -6,7 +6,7 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/23 17:35:19 by barbare           #+#    #+#             */
-/*   Updated: 2017/01/24 09:57:54 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/27 13:19:19 by mbarbari         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #ifndef MESSAGE_H
 # define MESSAGE_H
 
-#define PTIME(COL) print_time(COL);
+# define PTIME(COL) print_time(COL);
 
 # define S_MESSAGE(X, FD, ...) {CLI(X, FD, C_GREEN, ##__VA_ARGS__);}
 # define F_MESSAGE(X, FD) {CLI(X, FD, C_GREEN); SRV(X, FD);}
@@ -33,195 +33,13 @@
 # define SRV(X, FD) CLIPRINT(FD); printf(C_RED"%s%s\n", MESS_ ## X, C_NONE);
 # define CLIPRINT(FD) printf(C_CYAN"Client %d : ", FD);
 
-#define PRINT(STR, SIZE, COL) {printf("%s%.*s%s\n", COL, SIZE, STR, C_NONE);}
-#define OK(STR, SIZE) { PTIME(C_GREEN) PRINT(STR, SIZE, C_GREEN) }
-#define KO(STR, SIZE) { PTIME(C_RED) PRINT(STR, SIZE, C_RED)}
+# define PRINT(STR, SIZE, COL) {printf("%s%.*s%s\n", COL, SIZE, STR, C_NONE);}
+# define OK(STR, SIZE) { PTIME(C_GREEN) PRINT(STR, SIZE, C_GREEN) }
+# define KO(STR, SIZE) { PTIME(C_RED) PRINT(STR, SIZE, C_RED)}
 
-#define RESPONSE(STR) { PTIME(C_GREEN) printf("%s%s\n", STR, C_NONE); }
-#define FAILED(STR, ...) { PTIME(C_RED) dprintf(1, STR, ##__VA_ARGS__); }
-#define STATUS(STR, ...) { PTIME(BLUE) dprintf(1, STR, ##__VA_ARGS__); }
-
-
-/*
-** ==== Etablissement de connexion ===
-** 120
-** 220
-** 220
-** 421
-
-** === Ouverture de session ===
-** USER
-** 230
-** 530
-** 500, 501, 421
-** 331, 332
-
-** PASS
-** 230
-** 202
-** 530
-** 500, 501, 503, 421
-
-** CWD
-** 250
-** 500, 501, 502, 421, 530, 550
-
-** === Fermeture de session ===
-** QUIT
-** 221
-** 500
-
-** === Paramètres de transfert ===
-** PORT
-** 200
-** 500, 501, 421, 530
-
-** PASV
-** 227
-** 500, 501, 502, 421, 530
-
-** MODE
-** 200
-** 500, 501, 504, 421, 530
-
-** STRU
-** 200
-** 500, 501, 504, 421, 530
-
-** === Commandes de service fichiers ===
-** ALLO
-** 200
-** 202
-** 500, 501, 504, 421, 530
-** REST
-** -- RFC959 45 --
-** 500, 501, 502, 421, 530
-** 350
-
-** STOR
-** 125, 150
-** (110)
-** 226, 250
-** 425, 426, 451, 551, 552
-** 532, 450, 452, 553
-** 500, 501, 421, 530
-
-** STOU
-** 125, 150
-** (110)
-** 226, 250
-** 425, 426, 451, 551, 552
-** 532, 450, 452, 553
-** 500, 501, 421, 530
-
-** RETR
-** 125, 150
-** (110)
-** 226, 250
-** 425, 426, 451
-** 450, 550
-** 500, 501, 421, 530
-
-** LIST
-** 125, 150
-** 226, 250
-** 425, 426, 451
-** 450
-** 500, 501, 502, 421, 530
-
-** NLST
-** 125, 150
-** 226, 250
-** 425, 426, 451
-** 450
-** 500, 501, 502, 421, 530
-
-** APPE
-** 125, 150
-** (110)
-** 226, 250
-** 425, 426, 451, 551, 552
-** 532, 450, 550, 452, 553
-** 500, 501, 502, 421, 530
-
-** RNFR
-** 450, 550
-** 500, 501, 502, 421, 530
-** 350
-
-** RNTO
-** 250
-** 532, 553
-** 500, 501, 502, 503, 421, 530
-
-** -- RFC959 46 --
-** DELE
-** 250
-** 450, 550
-** 500, 501, 502, 421, 530
-** RMD
-** 250
-** 500, 501, 502, 421, 530, 550
-** MKD
-** 257
-** 500, 501, 502, 421, 530, 550
-** PWD
-** 257
-** 500, 501, 502, 421, 550
-** ABOR
-** 225, 226
-** 500, 501, 502, 421
-
-** === Commandes d'information ===
-** SYST
-** 215
-** 500, 501, 502, 421
-** STAT
-** 211, 212, 213
-** 450
-** 500, 501, 502, 421, 530
-** HELP
-** 211, 214
-** 500, 501, 502, 421
-
-** === Commandes diverses ===
-** SITE
-** 200
-** 202
-** 500, 501, 530
-** NOOP
-** 200
-** 500, 421
-
-** === Ouverture de session ===
-** USER
-** 230
-** 530
-** 500, 501, 421
-** 331, 332
-** PASS
-** 230
-** 202
-** 530
-** 500, 501, 503, 421
-
-** RETR
-** 125, 150
-** (110)
-** 226, 250
-** 425, 426, 451
-** 450, 550
-** 500, 501, 421, 530
-
-** TYPE
-** 200
-** 500, 501, 504, 421, 530
-
-** PORT
-** 200
-** 500, 501, 421, 530
-
-*/
+# define RESPONSE(STR) { PTIME(C_GREEN) printf("%s%s\n", STR, C_NONE); }
+# define FAILED(STR, ...) { PTIME(C_RED) dprintf(1, STR, ##__VA_ARGS__); }
+# define STATUS(STR, ...) { PTIME(BLUE) dprintf(1, STR, ##__VA_ARGS__); }
 
 # define MESS_110 "110 Restart marker reply.\r\n"
 # define MESS_120 "120 Service ready in nnn minutes.\r\n"

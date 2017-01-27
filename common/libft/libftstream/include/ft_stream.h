@@ -6,11 +6,11 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/10/22 16:34:13 by barbare           #+#    #+#             */
-/*   Updated: 2017/01/23 14:44:54 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/27 13:25:31 by mbarbari         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# ifndef FT_STREAM_H
+#ifndef FT_STREAM_H
 # define FT_STREAM_H
 
 # include <stddef.h>
@@ -23,6 +23,7 @@
 
 # define F_START	0x0
 # define F_END		0x1
+
 /*
 ** ****************************************************************************
 ** ft_stream_new
@@ -38,8 +39,8 @@ typedef struct		s_stream
 	char			fdin;
 	char			fdout;
 	char			fderr;
-	int			    size;
-	int			    cursor;
+	int				size;
+	int				cursor;
 	char			buf[BUFFSTREAM];
 	char			*get;
 }					t_stream;
@@ -63,7 +64,7 @@ t_stream			ft_stream_set_fderr(t_stream stream, int fderr);
 ** ****************************************************************************
 */
 t_stream			ft_stream_cr(t_stream stream);
-t_stream	    	ft_stream_fill(t_stream stream);
+t_stream			ft_stream_fill(t_stream stream);
 
 /*
 ** ****************************************************************************
@@ -96,6 +97,6 @@ t_stream			ft_stream_filter(t_stream stream,
 */
 t_stream			ft_stream_get_protocol(t_stream stream, char *buf,
 										size_t size, char *prot);
-t_stream			ft_stream_get_expr(t_stream stream,	char *expr, int flags);
+t_stream			ft_stream_get_expr(t_stream stream, char *expr, int fl);
 
 #endif

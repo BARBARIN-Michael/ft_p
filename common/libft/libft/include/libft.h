@@ -6,7 +6,7 @@
 /*   By: mbarbari <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/03 14:05:43 by mbarbari          #+#    #+#             */
-/*   Updated: 2017/01/19 15:42:05 by barbare          ###   ########.fr       */
+/*   Updated: 2017/01/27 13:22:46 by mbarbari         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 # elif defined(__GNUC__)
 #  define UNUSED(x) UNUSED_ ## x __attribute__((unused))
 # elif defined(__LCLINT__)
-#  define UNUSED(x) /*@unused@*/ x
+#  define UNUSED(x) x
 # else
 #  define UNUSED(x) x
 # endif
@@ -164,8 +164,8 @@ char				*ft_strsub(char const *s1, unsigned int start, size_t len);
 char				*ft_wstrsub(char const *s1, unsigned int s, size_t len);
 char				**ft_strsplit(char const *s, char c);
 char				**ft_nstrsplit(char const *s, char c, int nbr_val);
-char                **ft_strsplit2(char *str, char c);
-char                **ft_nstrsplit2(char *str, char c, unsigned int count);
+char				**ft_strsplit2(char *str, char c);
+char				**ft_nstrsplit2(char *str, char c, unsigned int count);
 char				*ft_strcpy(char *dst, char *src);
 size_t				ft_strlen(const char *str);
 size_t				ft_strlen_by_c(const char *str, int c);
@@ -176,9 +176,9 @@ void				ft_striter(char *s, void (*f)(char *));
 void				ft_striteri(char *s, void (*f)(unsigned int, char *));
 char				*ft_strncpy(char *dest, const char *src, size_t n);
 char				*ft_strset(char *s1, int pos, int nbr, int car);
-char	            *ft_insert(char *str, char *val);
-char	            *ft_ninsert(char *str, int elem, char *val);
-char	            **ft_insert_data_tab2d(char **tab, int raw, int type, ...);
+char				*ft_insert(char *str, char *val);
+char				*ft_ninsert(char *str, int elem, char *val);
+char				**ft_insert_data_tab2d(char **tab, int raw, int type, ...);
 int					ft_count_carac(char *str, int car);
 
 char				*ft_replace(char *s1, char *s2, char *s3);
@@ -249,5 +249,5 @@ long				ft_pow(int valeur, int power);
 int					ft_round(float f);
 int					ft_ceil(float f);
 
-void				ft_log(const char* content, const char* error);
+void				ft_log(const char *content, const char *error);
 #endif
