@@ -38,6 +38,7 @@ t_cli		handle_pwd(t_env env, t_cli cli, char *param)
 	(void)param;
 	buf[0] = '\0';
 	getcwd(buf, PATH_MAX);
+	dprintf(1, "pwd : %s\n", buf);
 	S_MESSAGE(257, cli.fd, transform_home(cli.home, buf));
 	return (cli);
 }

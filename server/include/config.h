@@ -33,6 +33,7 @@
 #  define SYSTEM "OSX"
 #  define CRLF "\n"
 # endif
+# define PROT "\r\n"
 
 # define ASCII 'A'
 # define BINARY 'I'

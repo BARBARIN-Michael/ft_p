@@ -46,6 +46,7 @@ void				fork_ls(t_cli cli, t_env env, char **args)
 	int		ret;
 	int		pid[2];
 
+	(void)env;
 	pipe(pid);
 	if ((ret = fork()) == 0)
 	{
@@ -62,7 +63,8 @@ void				fork_ls(t_cli cli, t_env env, char **args)
 	else
 	{
 		close(pid[1]);
-		transfer_crlf(pid[0], env.dtp_fd, "\n", "\r\n");
+		send_fd_to_sock_crlf(pid[0], cli.env.dtp_fd, CRLF, "\r\n");
+		cli.env = server_close_dtp(cli.env);
 		wait(NULL);
 		S_MESSAGE(226, cli.fd);
 	}
@@ -93,6 +95,5 @@ t_cli				handle_ls(t_env env, t_cli cli, char *str)
 	}
 	else
 		E_MESSAGE(530, cli.fd);
-	cli.env = server_close_dtp(cli.env);
 	return (cli);
 }

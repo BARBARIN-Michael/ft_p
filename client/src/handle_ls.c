@@ -14,6 +14,7 @@
 #include "ft_stream.h"
 #include "config.h"
 #include "read.h"
+#include "tool.h"
 #include "client.h"
 #include <stdio.h>
 #include <sys/wait.h>
@@ -34,7 +35,7 @@ t_cli		handle_ls(t_cli cli, t_env env, char *cmd)
 		cli.sock.dtp = set_dtp_stdout(cli, env);
 		if ((fork() == 0))
 		{
-			cli.sock.dtp = ft_stream_read_full(cli.sock.dtp, 0 | F_MOVE);
+			send_sock_to_fd_crlf(cli.sock.dtp.fdin, STDOUT, PROT, CRLF);
 			exit(0);
 		}
 		wait(NULL);

@@ -40,9 +40,9 @@ t_cli		handle_put(t_env env, t_cli cli, char *param)
 	{
 		cli.env = server_accept_dtp(cli.env);
 		if (cli.type_transfer == BINARY)
-			transfer_binary(cli.env.dtp_fd, fd);
+			send_sock_to_fd_binary(cli.env.dtp_fd, fd);
 		else if (cli.type_transfer == ASCII)
-			transfer_crlf(cli.env.dtp_fd, fd, "\r\n", CRLF);
+			send_sock_to_fd_crlf(cli.env.dtp_fd, fd, PROT, CRLF);
 		S_MESSAGE(250, cli.fd);
 		exit(0);
 	}

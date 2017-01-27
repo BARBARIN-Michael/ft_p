@@ -29,7 +29,9 @@ clean:
 fclean: clean
 	make -C ./client/ fclean
 	make -C ./server/ fclean
+	make -C ./common/libft/libft/ fclean
+	make -C ./common/libft/libftstream/ fclean
 
 re: fclean all
 
-.PHONY: clean fclean re all libft/libft.a libft/libftstream.a
+.PHONY: clean fclean re all

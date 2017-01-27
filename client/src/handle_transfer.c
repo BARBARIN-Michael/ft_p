@@ -35,9 +35,11 @@ static void		handle_get(t_env env, t_cli cli, char *cmd)
 		cli.sock.dtp = set_dtp_receive_file(cli, env, cmd);
 		if (fork() == 0)
 		{
-			(cli.type_transfer == ASCII) ? transfer_crlf(cli.sock.dtp.fdin,
-					cli.sock.dtp.fdout, PROT, CRLF) :
-				transfer_binary(cli.sock.dtp.fdin, cli.sock.dtp.fdout);
+			if (cli.type_transfer == ASCII)
+				send_sock_to_fd_crlf(cli.sock.dtp.fdin,
+					cli.sock.dtp.fdout, "\r\n", "\n");
+			else
+				send_sock_to_fd_binary(cli.sock.dtp.fdin, cli.sock.dtp.fdout);
 			exit(0);
 		}
 		wait(NULL);
@@ -62,9 +64,11 @@ static void		handle_put(t_env env, t_cli cli, char *cmd)
 		if (fork() == 0)
 		{
 			cli.sock.dtp = set_dtp_put_file(cli, env, cmd);
-			(cli.type_transfer == ASCII) ? transfer_crlf(cli.sock.dtp.fdin,
-					cli.sock.dtp.fdout, CRLF, PROT) :
-				transfer_binary(cli.sock.dtp.fdin, cli.sock.dtp.fdout);
+			if (cli.type_transfer == ASCII)
+				send_fd_to_sock_crlf(cli.sock.dtp.fdin,
+						cli.sock.dtp.fdout, CRLF, PROT);
+			else
+				send_fd_to_sock_binary(cli.sock.dtp.fdin, cli.sock.dtp.fdout);
 			exit(0);
 		}
 		wait(NULL);

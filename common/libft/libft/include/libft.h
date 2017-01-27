@@ -120,6 +120,7 @@ void				*ft_memmove(void *dst, const void *src, size_t n);
 void				*ft_memchr(const void *src, int c, size_t len);
 void				ft_memdel(void **ap);
 int					ft_memcmp(const void *s1, const void *s2, size_t n);
+void				*ft_memstrstr(const void *mem, const char *cmp, size_t i);
 
 int					ft_findchr(const char *src, int c);
 void				ft_strclr(char *s);

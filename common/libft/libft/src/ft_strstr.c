@@ -21,7 +21,7 @@ char		*ft_strstr(const char *s1, const char *s2)
 		return ((char*)s1);
 	while (s1 && *s1 != '\0')
 	{
-		if (ft_strncmp(s1, s2, len_s2) == 0)
+		if (ft_memcmp(s1, s2, len_s2) == 0)
 			return ((char*)s1);
 		s1++;
 	}

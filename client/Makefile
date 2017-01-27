@@ -38,7 +38,7 @@ COM_SRCS = ../common/src/tool.c \
 CLI_OBJS = $(patsubst src/%.c,obj/%.o,$(CLI_SRCS))
 COM_OBJS = $(patsubst ../common/src/%.c,../common/obj/%.o,$(COM_SRCS))
 
-SRC_INCLUDE = include/*.h \
+SRC_INCLUDE = ./include/*.h \
 			  ../common/include/*.h
 
 RM ?= rm -f

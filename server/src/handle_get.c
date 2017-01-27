@@ -19,11 +19,11 @@
 #include <sys/socket.h>
 #include <sys/wait.h>
 #include "message.h"
-#include "config.h"
 #include "error.h"
 #include "handle.h"
 #include "tool.h"
 #include "server.h"
+#include "config.h"
 
 static int		test_file(char *args, int fd)
 {
@@ -65,13 +65,12 @@ t_cli			handle_get(t_env env, t_cli cli, char *param)
 		cli.env = server_accept_dtp(cli.env);
 		fd = open(args[1], O_RDONLY);
 		if (cli.type_transfer == BINARY)
-			transfer_binary(fd, cli.env.dtp_fd);
+			send_fd_to_sock_binary(fd, cli.env.dtp_fd);
 		else if (cli.type_transfer == ASCII)
-			transfer_crlf(fd, cli.env.dtp_fd, CRLF, "\r\n");
+			send_fd_to_sock_crlf(fd, cli.env.dtp_fd, CRLF, PROT);
 		S_MESSAGE(250, cli.fd);
 		exit(0);
 	}
-	dprintf(1, "close socket\n");
 	wait(NULL);
 	return (cli);
 }
